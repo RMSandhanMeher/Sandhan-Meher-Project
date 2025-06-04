@@ -1,0 +1,68 @@
+package com.java.asm.bean;
+
+import java.io.Serializable;
+
+import com.java.asm.model.User;
+import com.java.asm.service.UserService;
+
+public class UserController implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	private User user = new User();
+	private String message;
+
+	private final UserService userService = new UserService();
+
+	public String register() {
+		System.out.println("UserController : register : Attempting to register user: " + user.getEmail());
+
+		if (user.getRole() == null) {
+			message = "Please select a role.";
+			System.out.println("UserController : register : Role not selected.");
+			return null;
+		}
+
+		boolean success = userService.addUser(user);
+		if (success) {
+			message = "User registered successfully!";
+			System.out.println("UserController : register : Registration successful.");
+			user = new User(); 
+		} else {
+			message = "Registration failed. Try again.";
+			System.out.println("UserController : register : Registration failed.");
+		}
+		return null;
+	}
+
+	public String login() {
+		System.out.println("UserController : login : Attempting login for: " + user.getEmail());
+		User loggedInUser = userService.authenticate(user.getEmail(), user.getPassword());
+
+		if (loggedInUser != null) {
+			message = "Login successful! Welcome " + loggedInUser.getName();
+			System.out.println("UserController : login : Success.");
+			return "../welcome.jsp"; 
+		} else {
+			message = "Invalid email or password.";
+			System.out.println("UserController : login : Failed login attempt.");
+			return null;
+		}
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+}

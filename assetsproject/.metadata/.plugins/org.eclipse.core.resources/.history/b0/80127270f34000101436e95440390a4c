@@ -1,0 +1,193 @@
+package com.java.asm.bean;
+
+import com.java.asm.model.Asset;
+import com.java.asm.model.AssetIssue;
+import com.java.asm.model.Status;
+import com.java.asm.model.User;
+import com.java.asm.service.AssetIssueService;
+import com.java.asm.service.AssetService;
+import com.java.asm.service.UserService;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+public class AssetIssueController implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    private AssetIssue assetIssue = new AssetIssue();
+    private List<AssetIssue> assetIssueList;
+    private String message;
+    private String messageType; // "success" or "error"
+    private String expectedReturnDateString; // For JSF date input
+
+    private final AssetIssueService assetIssueService = new AssetIssueService();
+    private final UserService userService = new UserService();
+    private final AssetService assetService = new AssetService();
+
+    // Issue asset
+    public String issueAsset() {
+        try {
+            // Convert expected return date string to LocalDate
+            if (expectedReturnDateString != null && !expectedReturnDateString.isEmpty()) {
+                assetIssue.setExpectedReturnDate(LocalDate.parse(expectedReturnDateString, DATE_FORMATTER));
+            }
+
+            // Input validation
+            if (assetIssue.getIssuedTo() <= 0) {
+                setErrorMessage("Please select a valid user");
+                return null;
+            }
+
+            if (assetIssue.getAssetId() <= 0) {
+                setErrorMessage("Please select a valid asset");
+                return null;
+            }
+
+            // Check asset availability
+            Asset asset = assetService.getAssetById(assetIssue.getAssetId());
+            if (asset == null || asset.getQuantity() <= 0) {
+                setErrorMessage("Selected asset is not available");
+                return null;
+            }
+
+            // Check for existing issue
+            if (assetIssueService.checkIfIssueExists(assetIssue.getIssuedTo(), assetIssue.getAssetId())) {
+                setErrorMessage("This asset is already issued to the selected user");
+                return null;
+            }
+
+            // Set issue details
+            assetIssue.setIssueDate(LocalDate.now());
+            assetIssue.setIssuedBy(1); // Replace with logged-in user in real app
+            assetIssue.setStatus(Status.ISSUED);
+
+            // Attempt to issue asset
+            if (assetIssueService.issueAsset(assetIssue)) {
+                // Decrease asset quantity
+                asset.setQuantity(asset.getQuantity() - 1);
+                assetService.updateAsset(asset);
+
+                setSuccessMessage("Asset issued successfully!");
+                assetIssue = new AssetIssue(); // reset form
+                expectedReturnDateString = null;
+            } else {
+                setErrorMessage("Failed to issue asset. Please try again.");
+            }
+        } catch (Exception e) {
+            setErrorMessage("An error occurred: " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
+        }
+
+        refreshIssues();
+        return null;
+    }
+
+    // Return asset
+    public String returnAsset(int issueId) {
+        try {
+            boolean result = assetIssueService.returnAsset(issueId);
+            if (result) {
+                setSuccessMessage("Asset returned successfully!");
+            } else {
+                setErrorMessage("Failed to return asset.");
+            }
+        } catch (Exception e) {
+            setErrorMessage("Error returning asset: " + e.getMessage());
+        }
+
+        refreshIssues();
+        return null;
+    }
+
+    // Refresh list
+    public void refreshIssues() {
+        assetIssueList = assetIssueService.getAllIssues();
+    }
+
+    // Message setters
+    private void setSuccessMessage(String msg) {
+        this.message = msg;
+        this.messageType = "success";
+    }
+
+    private void setErrorMessage(String msg) {
+        this.message = msg;
+        this.messageType = "error";
+    }
+
+    // Getters and Setters
+
+    public AssetIssue getAssetIssue() {
+        return assetIssue;
+    }
+
+    public void setAssetIssue(AssetIssue assetIssue) {
+        this.assetIssue = assetIssue;
+    }
+
+    public List<AssetIssue> getAssetIssueList() {
+        if (assetIssueList == null) {
+            refreshIssues();
+        }
+        return assetIssueList;
+    }
+
+    public void setAssetIssueList(List<AssetIssue> assetIssueList) {
+        this.assetIssueList = assetIssueList;
+    }
+
+    public List<User> getUserList() {
+        return userService.getAllUsers();
+    }
+
+    public List<Asset> getAssetList() {
+        return assetService.getAllAssets();
+    }
+
+    public AssetIssueService getAssetIssueService() {
+        return assetIssueService;
+    }
+
+    public UserService getUserService() {
+        return userService;
+    }
+
+    public AssetService getAssetService() {
+        return assetService;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
+    }
+
+    public String getExpectedReturnDateString() {
+        return expectedReturnDateString;
+    }
+
+    public void setExpectedReturnDateString(String expectedReturnDateString) {
+        this.expectedReturnDateString = expectedReturnDateString;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+}

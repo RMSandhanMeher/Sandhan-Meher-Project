@@ -1,0 +1,96 @@
+package com.java.asm.bean;
+
+import com.java.asm.model.Asset;
+import com.java.asm.service.AssetService;
+
+import java.io.Serializable;
+import java.util.List;
+
+
+public class AssetController implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private Asset asset = new Asset();
+    private List<Asset> assetList;
+    private String message;
+    private boolean editMode = false;
+
+    private final AssetService assetService = new AssetService();
+
+    public String addAsset() {
+        boolean result = assetService.addAsset(asset);
+        if (result) {
+            message = "Asset added successfully!";
+            asset = new Asset(); // reset
+        } else {
+            message = "Failed to add asset.";
+        }
+        refreshAssets();
+        return null;
+    }
+
+    public String editAsset(Asset selectedAsset) {
+        this.asset = selectedAsset;
+        this.editMode = true;
+        return null;
+    }
+
+    public String updateAsset() {
+        boolean result = assetService.updateAsset(asset);
+        message = result ? "Asset updated successfully!" : "Failed to update asset.";
+        asset = new Asset(); // reset
+        editMode = false;
+        refreshAssets();
+        return null;
+    }
+
+    public String cancelEdit() {
+        asset = new Asset();
+        editMode = false;
+        return null;
+    }
+
+    public String deleteAsset(int id) {
+        boolean result = assetService.deleteAsset(id);
+        message = result ? "Asset deleted." : "Failed to delete.";
+        refreshAssets();
+        return null;
+    }
+
+    public void refreshAssets() {
+        assetList = assetService.getAllAssets();
+    }
+
+    // Getters and Setters
+    public Asset getAsset() {
+        return asset;
+    }
+
+    public void setAsset(Asset asset) {
+        this.asset = asset;
+    }
+
+    public List<Asset> getAssetList() {
+        if (assetList == null) {
+            refreshAssets();
+        }
+        return assetList;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public boolean isEditMode() {
+        return editMode;
+    }
+
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
+    }
+}

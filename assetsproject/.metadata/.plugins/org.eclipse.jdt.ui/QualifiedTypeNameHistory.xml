@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="com.java.asm.dao.UserDao"/>
+    <fullyQualifiedTypeName name="com.java.asm.dao.AssetDao"/>
+    <fullyQualifiedTypeName name="com.java.asm.dao.AssetIssueDao"/>
+    <fullyQualifiedTypeName name="com.java.asm.model.Status"/>
+    <fullyQualifiedTypeName name="org.apache.log4j.Logger"/>
+    <fullyQualifiedTypeName name="com.java.asm.util.EncryptPassword"/>
+    <fullyQualifiedTypeName name="com.java.asm.model.Role"/>
+    <fullyQualifiedTypeName name="com.java.jsf.UserDaoImpl"/>
+    <fullyQualifiedTypeName name="org.hibernate.Criteria"/>
+    <fullyQualifiedTypeName name="com.java.jsf.DailyExpenses"/>
+    <fullyQualifiedTypeName name="org.hibernate.criterion.Restrictions"/>
+</qualifiedTypeNameHistroy>

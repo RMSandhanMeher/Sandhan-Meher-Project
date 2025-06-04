@@ -1,0 +1,5 @@
+package com.java.asm.model;
+
+public enum Status {
+
+}

@@ -1,0 +1,28 @@
+package com.java.asm.dao;
+
+import java.util.List;
+import com.java.asm.model.User;
+
+public interface UserDao {
+
+	// Create or register a new user
+	boolean addUser(User user);
+
+	// Retrieve a user by ID
+	User getUserById(int id);
+
+	// Retrieve a user by email (useful for login)
+	User getUserByEmail(String email);
+
+	// Retrieve all users
+	List<User> getAllUsers();
+
+	// Update user information
+	boolean updateUser(User user);
+
+	// Delete a user by ID
+	boolean deleteUser(int id);
+
+	// Authenticate user login (by email and password)
+	User authenticate(String email, String password);
+}

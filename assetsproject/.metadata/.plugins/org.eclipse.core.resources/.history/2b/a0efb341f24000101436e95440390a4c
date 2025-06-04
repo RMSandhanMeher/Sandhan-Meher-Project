@@ -1,0 +1,213 @@
+package com.java.asm.service;
+
+import com.java.asm.dao.AssetIssueDao;
+import com.java.asm.dao.imp.AssetIssueDaoImpl;
+import com.java.asm.model.Asset;
+import com.java.asm.model.AssetIssue;
+import com.java.asm.service.AssetService;
+import org.apache.log4j.Logger;
+
+import java.time.LocalDate;
+import java.util.List;
+
+public class AssetIssueService {
+
+    private static final Logger logger = Logger.getLogger(AssetIssueService.class);
+    private final AssetIssueDao assetIssueDao;
+    private final AssetService assetService;
+
+    // Constructor with dependency injection
+    public AssetIssueService() {
+        this.assetIssueDao = new AssetIssueDaoImpl();
+        this.assetService = new AssetService();
+    }
+
+    // For testing purposes (dependency injection)
+    public AssetIssueService(AssetIssueDao assetIssueDao, AssetService assetService) {
+        this.assetIssueDao = assetIssueDao;
+        this.assetService = assetService;
+    }
+
+    public boolean issueAsset(AssetIssue assetIssue) {
+        try {
+            // Check if asset is available
+            if (!isAssetAvailable(assetIssue.getAssetId())) {
+                logger.info("service layer :issueAsset: Asset not available. Asset ID: " + assetIssue.getAssetId());
+                return false;
+            }
+
+            boolean result = assetIssueDao.issueAsset(assetIssue);
+            if (result) {
+                // Decrement asset quantity
+                boolean quantityUpdated = assetService.decrementAssetQuantity(assetIssue.getAssetId());
+                if (!quantityUpdated) {
+                    logger.error("service layer :issueAsset: Failed to update asset quantity");
+                    return false;
+                }
+                logger.info("service layer :issueAsset: Asset issued successfully. Asset ID: " + assetIssue.getAssetId());
+            } else {
+                logger.info("service layer :issueAsset: Failed to issue asset. Asset ID: " + assetIssue.getAssetId());
+            }
+            return result;
+        } catch (Exception e) {
+            logger.error("service layer :issueAsset: Error - " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    private boolean isAssetAvailable(int assetId) {
+        try {
+            int availableQuantity = assetService.getAssetById(assetId).getQuantity();
+            return availableQuantity > 0;
+        } catch (Exception e) {
+            logger.error("service layer :isAssetAvailable: Error checking asset availability - " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public AssetIssue getIssueById(int id) {
+        try {
+            AssetIssue issue = assetIssueDao.getIssueById(id);
+            if (issue != null) {
+                logger.info("service layer :getIssueById: Asset issue retrieved. ID: " + id);
+            } else {
+                logger.info("service layer :getIssueById: No issue found for ID: " + id);
+            }
+            return issue;
+        } catch (Exception e) {
+            logger.error("service layer :getIssueById: Error - " + e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public List<AssetIssue> getAllIssuedAssets() {
+        try {
+            List<AssetIssue> list = assetIssueDao.getAllIssuedAssets();
+            logger.info("service layer :getAllIssuedAssets: Total issued assets fetched = " + list.size());
+            return list;
+        } catch (Exception e) {
+            logger.error("service layer :getAllIssuedAssets: Error - " + e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public List<AssetIssue> getIssuesByUserId(int userId) {
+        try {
+            List<AssetIssue> list = assetIssueDao.getIssuesByUserId(userId);
+            logger.info("service layer :getIssuesByUserId: Issues for user " + userId + " = " + list.size());
+            return list;
+        } catch (Exception e) {
+            logger.error("service layer :getIssuesByUserId: Error - " + e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public boolean returnAsset(int issueId) {
+        try {
+            AssetIssue issue = assetIssueDao.getIssueById(issueId);
+            if (issue == null) {
+                logger.info("service layer :returnAsset: Issue not found with ID: " + issueId);
+                return false;
+            }
+
+            // First return the asset
+            boolean result = assetIssueDao.returnAsset(issueId, LocalDate.now());
+            if (result) {
+                // Then increment asset quantity
+                boolean quantityUpdated = assetService.incrementAssetQuantity(issue.getAssetId());
+                if (!quantityUpdated) {
+                    logger.error("service layer :returnAsset: Failed to update asset quantity");
+                    return false;
+                }
+                logger.info("service layer :returnAsset: Asset returned successfully. Issue ID: " + issueId);
+            } else {
+                logger.info("service layer :returnAsset: Failed to return asset. Issue ID: " + issueId);
+            }
+            return result;
+        } catch (Exception e) {
+            logger.error("service layer :returnAsset: Error - " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public List<AssetIssue> getActiveIssues() {
+        try {
+            List<AssetIssue> list = assetIssueDao.getActiveIssues();
+            logger.info("service layer :getActiveIssues: Active issues found = " + list.size());
+            return list;
+        } catch (Exception e) {
+            logger.error("service layer :getActiveIssues: Error - " + e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public boolean updateIssue(AssetIssue issue) {
+        try {
+            boolean result = assetIssueDao.updateIssue(issue);
+            if (result) {
+                logger.info("service layer :updateIssue: Asset issue updated. ID: " + issue.getId());
+            } else {
+                logger.info("service layer :updateIssue: Failed to update issue. ID: " + issue.getId());
+            }
+            return result;
+        } catch (Exception e) {
+            logger.error("service layer :updateIssue: Error - " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public boolean checkIfIssueExists(int userId, int assetId) {
+        try {
+            List<AssetIssue> existingIssues = assetIssueDao.getActiveIssues();
+            for (AssetIssue issue : existingIssues) {
+                if (issue.getIssuedTo() == userId && issue.getAssetId() == assetId) {
+                    logger.info("service layer :checkIfIssueExists: Duplicate found for user " + userId + " and asset "
+                            + assetId);
+                    return true;
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error("service layer :checkIfIssueExists: Error - " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public List<AssetIssue> getAllIssues() {
+        try {
+            List<AssetIssue> list = assetIssueDao.getAllIssuedAssets();
+            logger.info("service layer :getAllIssues: Total issues fetched = " + list.size());
+            return list;
+        } catch (Exception e) {
+            logger.error("service layer :getAllIssues: Error - " + e.getMessage(), e);
+            return null;
+        }
+    }
+    public boolean decrementAssetQuantity(int assetId) {
+        Asset asset = getAssetById(assetId);
+        if (asset != null && asset.getQuantity() > 0) {
+            asset.setQuantity(asset.getQuantity() - 1);
+            return updateAsset(asset);
+        }
+        return false;
+    }
+
+    public boolean incrementAssetQuantity(int assetId) {
+        Asset asset = getAssetById(assetId);
+        if (asset != null) {
+            asset.setQuantity(asset.getQuantity() + 1);
+            return updateAsset(asset);
+        }
+        return false;
+    }
+
+	private boolean updateAsset(Asset asset) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private Asset getAssetById(int assetId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

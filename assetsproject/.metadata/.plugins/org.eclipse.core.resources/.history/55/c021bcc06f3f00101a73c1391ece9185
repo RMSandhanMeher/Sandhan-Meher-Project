@@ -1,0 +1,159 @@
+package com.java.asm.dao.imp;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.java.asm.dao.AssetIssueDao;
+import com.java.asm.model.AssetIssue;
+import com.java.asm.util.ConnectionHelper;
+
+public class AssetIssueDaoImpl implements AssetIssueDao {
+
+    @Override
+    public boolean issueAsset(AssetIssue assetIssue) {
+        String sql = "INSERT INTO asset_issues (asset_id, issued_to, issued_by, issue_date, expected_return_date, status) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conn = ConnectionHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, assetIssue.getAssetId());
+            stmt.setInt(2, assetIssue.getIssuedTo());
+            stmt.setInt(3, assetIssue.getIssuedBy());
+            stmt.setDate(4, java.sql.Date.valueOf(assetIssue.getIssueDate()));
+            stmt.setDate(5, assetIssue.getExpectedReturnDate() != null ? java.sql.Date.valueOf(assetIssue.getExpectedReturnDate()) : null);
+            stmt.setString(6, assetIssue.getStatus().name());
+
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public AssetIssue getIssueById(int id) {
+        String sql = "SELECT * FROM asset_issues WHERE id = ?";
+        try (Connection conn = ConnectionHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return mapResultSetToAssetIssue(rs);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public List<AssetIssue> getAllIssuedAssets() {
+        List<AssetIssue> issues = new ArrayList<>();
+        String sql = "SELECT * FROM asset_issues";
+        try (Connection conn = ConnectionHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                issues.add(mapResultSetToAssetIssue(rs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return issues;
+    }
+
+    @Override
+    public List<AssetIssue> getIssuesByUserId(int userId) {
+        List<AssetIssue> issues = new ArrayList<>();
+        String sql = "SELECT * FROM asset_issues WHERE issued_to = ?";
+        try (Connection conn = ConnectionHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                issues.add(mapResultSetToAssetIssue(rs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return issues;
+    }
+
+    @Override
+    public boolean returnAsset(int issueId, LocalDate returnDate) {
+        String sql = "UPDATE asset_issues SET return_date = ?, status = 'RETURNED' WHERE id = ?";
+        try (Connection conn = ConnectionHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setDate(1, java.sql.Date.valueOf(returnDate));
+            stmt.setInt(2, issueId);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public List<AssetIssue> getActiveIssues() {
+        List<AssetIssue> issues = new ArrayList<>();
+        String sql = "SELECT * FROM asset_issues WHERE status = 'ISSUED'";
+        try (Connection conn = ConnectionHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                issues.add(mapResultSetToAssetIssue(rs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return issues;
+    }
+
+    @Override
+    public boolean updateIssue(AssetIssue assetIssue) {
+        String sql = "UPDATE asset_issues SET asset_id = ?, issued_to = ?, issued_by = ?, issue_date = ?, expected_return_date = ?, return_date = ?, status = ? WHERE id = ?";
+        try (Connection conn = ConnectionHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, assetIssue.getAssetId());
+            stmt.setInt(2, assetIssue.getIssuedTo());
+            stmt.setInt(3, assetIssue.getIssuedBy());
+            stmt.setDate(4, java.sql.Date.valueOf(assetIssue.getIssueDate()));
+            stmt.setDate(5, assetIssue.getExpectedReturnDate() != null ? java.sql.Date.valueOf(assetIssue.getExpectedReturnDate()) : null);
+            stmt.setDate(6, assetIssue.getReturnDate() != null ? java.sql.Date.valueOf(assetIssue.getReturnDate()) : null);
+            stmt.setString(7, assetIssue.getStatus().name());
+            stmt.setInt(8, assetIssue.getId());
+
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private AssetIssue mapResultSetToAssetIssue(ResultSet rs) throws SQLException {
+        AssetIssue issue = new AssetIssue();
+        issue.setId(rs.getInt("id"));
+        issue.setAssetId(rs.getInt("asset_id"));
+        issue.setIssuedTo(rs.getInt("issued_to"));
+        issue.setIssuedBy(rs.getInt("issued_by"));
+        issue.setIssueDate(rs.getDate("issue_date").toLocalDate());
+        if (rs.getDate("expected_return_date") != null) {
+            issue.setExpectedReturnDate(rs.getDate("expected_return_date").toLocalDate());
+        }
+        if (rs.getDate("return_date") != null) {
+            issue.setReturnDate(rs.getDate("return_date").toLocalDate());
+        }
+        issue.setStatus(rs.getString("status"));
+        return issue;
+    }
+}

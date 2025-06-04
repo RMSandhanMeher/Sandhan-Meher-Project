@@ -1,0 +1,17 @@
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/arch=x86_64
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/name=Local
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/os=win32
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.wst.server,WildFly\ 9.x/name=WildFly 9.x
+configDescList=org.eclipse.launchbar.core.descriptorType.default\:MyResource,org.jboss.tools.wtp.server.launchbar.ModuleDescriptorType\:/view/signup.jsf,org.eclipse.launchbar.core.descriptorType.default\:Dummy,org.jboss.tools.wtp.server.launchbar.ModuleDescriptorType\:/view/assetIssue.jsf,org.eclipse.launchbar.core.descriptorType.default\:WildFly 9.x,org.jboss.tools.wtp.server.launchbar.ModuleDescriptorType\:assetsManagement,org.jboss.tools.wtp.server.launchbar.ModuleDescriptorType\:ExpensesProject,org.jboss.tools.wtp.server.launchbar.ModuleDescriptorType\:facadePattern
+eclipse.preferences.version=1
+org.eclipse.launchbar.core.descriptorType.default\:Dummy/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.local\:Local
+org.eclipse.launchbar.core.descriptorType.default\:MyResource/activeLaunchMode=run
+org.eclipse.launchbar.core.descriptorType.default\:MyResource/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.local\:Local
+org.eclipse.launchbar.core.descriptorType.default\:Tomcat\ v8.5\ Server\ at\ localhost/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.local\:Local
+org.eclipse.launchbar.core.descriptorType.default\:WildFly\ 9.x/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.local\:Local
+org.jboss.tools.wtp.server.launchbar.ModuleDescriptorType\:/view/signup.jsf/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.wst.server\:WildFly 9.x
+org.jboss.tools.wtp.server.launchbar.ModuleDescriptorType\:/view/welcome.jsf/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.wst.server\:WildFly 9.x
+org.jboss.tools.wtp.server.launchbar.ModuleDescriptorType\:ExpensesProject/activeLaunchMode=run
+org.jboss.tools.wtp.server.launchbar.ModuleDescriptorType\:ExpensesProject/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.wst.server\:WildFly 9.x
+org.jboss.tools.wtp.server.launchbar.ModuleDescriptorType\:assetsManagement/activeLaunchMode=run
+org.jboss.tools.wtp.server.launchbar.ModuleDescriptorType\:assetsManagement/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.wst.server\:WildFly 9.x

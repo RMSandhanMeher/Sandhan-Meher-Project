@@ -1,0 +1,179 @@
+package com.java.asm.dao.imp;
+
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.log4j.Logger;
+
+import com.java.asm.dao.AssetIssueDao;
+import com.java.asm.model.AssetIssue;
+import com.java.asm.model.Status;
+import com.java.asm.util.ConnectionHelper;
+
+public class AssetIssueDaoImpl implements AssetIssueDao {
+
+    private static final Logger logger = Logger.getLogger(AssetIssueDaoImpl.class.getName());
+
+    @Override
+    public boolean issueAsset(AssetIssue assetIssue) {
+        String sql = "INSERT INTO asset_issues (asset_id, issued_to, issued_by, issue_date, expected_return_date, status) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conn = ConnectionHelper.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, assetIssue.getAssetId());
+            stmt.setInt(2, assetIssue.getIssuedTo());
+            stmt.setInt(3, assetIssue.getIssuedBy());
+            stmt.setDate(4, Date.valueOf(assetIssue.getIssueDate()));
+            stmt.setDate(5, assetIssue.getExpectedReturnDate() != null ? Date.valueOf(assetIssue.getExpectedReturnDate()) : null);
+            stmt.setString(6, assetIssue.getStatus().name());
+
+            boolean result = stmt.executeUpdate() > 0;
+            if (result) logger.info("Asset issued successfully. Asset ID: " + assetIssue.getAssetId());
+            return result;
+        } catch (Exception e) {
+            logger.error("Error issuing asset: " + e.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public AssetIssue getIssueById(int id) {
+        String sql = "SELECT * FROM asset_issues WHERE id = ?";
+        try (Connection conn = ConnectionHelper.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    logger.info("Asset issue fetched by ID: " + id);
+                    return mapResultSetToAssetIssue(rs);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error getting asset issue by ID: " + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public List<AssetIssue> getAllIssuedAssets() {
+        List<AssetIssue> issues = new ArrayList<>();
+        String sql = "SELECT * FROM asset_issues";
+        try (Connection conn = ConnectionHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                issues.add(mapResultSetToAssetIssue(rs));
+            }
+            logger.info("Fetched all issued assets. Total: " + issues.size());
+        } catch (Exception e) {
+            logger.error("Error getting all issued assets: " + e.getMessage());
+        }
+        return issues;
+    }
+
+    @Override
+    public List<AssetIssue> getIssuesByUserId(int userId) {
+        List<AssetIssue> issues = new ArrayList<>();
+        String sql = "SELECT * FROM asset_issues WHERE issued_to = ?";
+        try (Connection conn = ConnectionHelper.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    issues.add(mapResultSetToAssetIssue(rs));
+                }
+            }
+            logger.info("Fetched asset issues by user ID: " + userId + ", Count: " + issues.size());
+        } catch (Exception e) {
+            logger.error("Error getting issues by user ID: " + e.getMessage());
+        }
+        return issues;
+    }
+
+    @Override
+    public boolean returnAsset(int issueId, LocalDate returnDate) {
+        String sql = "UPDATE asset_issues SET return_date = ?, status = 'RETURNED' WHERE id = ?";
+        try (Connection conn = ConnectionHelper.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setDate(1, Date.valueOf(returnDate));
+            stmt.setInt(2, issueId);
+
+            boolean result = stmt.executeUpdate() > 0;
+            if (result) logger.info("Asset returned successfully. Issue ID: " + issueId);
+            return result;
+        } catch (Exception e) {
+            logger.error("Error returning asset: " + e.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public List<AssetIssue> getActiveIssues() {
+        List<AssetIssue> issues = new ArrayList<>();
+        String sql = "SELECT * FROM asset_issues WHERE status = 'ISSUED'";
+        try (Connection conn = ConnectionHelper.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                issues.add(mapResultSetToAssetIssue(rs));
+            }
+            logger.info("Fetched active asset issues. Count: " + issues.size());
+        } catch (Exception e) {
+            logger.error("Error getting active issues: " + e.getMessage());
+        }
+        return issues;
+    }
+
+    @Override
+    public boolean updateIssue(AssetIssue assetIssue) {
+        String sql = "UPDATE asset_issues SET asset_id = ?, issued_to = ?, issued_by = ?, issue_date = ?, expected_return_date = ?, return_date = ?, status = ? WHERE id = ?";
+        try (Connection conn = ConnectionHelper.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, assetIssue.getAssetId());
+            stmt.setInt(2, assetIssue.getIssuedTo());
+            stmt.setInt(3, assetIssue.getIssuedBy());
+            stmt.setDate(4, Date.valueOf(assetIssue.getIssueDate()));
+            stmt.setDate(5, assetIssue.getExpectedReturnDate() != null ? Date.valueOf(assetIssue.getExpectedReturnDate()) : null);
+            stmt.setDate(6, assetIssue.getReturnDate() != null ? Date.valueOf(assetIssue.getReturnDate()) : null);
+            stmt.setString(7, assetIssue.getStatus().name());
+            stmt.setInt(8, assetIssue.getId());
+
+            boolean result = stmt.executeUpdate() > 0;
+            if (result) logger.info("Asset issue updated successfully. ID: " + assetIssue.getId());
+            return result;
+        } catch (Exception e) {
+            logger.error("Error updating asset issue: " + e.getMessage());
+        }
+        return false;
+    }
+
+    private AssetIssue mapResultSetToAssetIssue(ResultSet rs) throws SQLException {
+        AssetIssue issue = new AssetIssue();
+        issue.setId(rs.getInt("id"));
+        issue.setAssetId(rs.getInt("asset_id"));
+        issue.setIssuedTo(rs.getInt("issued_to"));
+        issue.setIssuedBy(rs.getInt("issued_by"));
+        issue.setIssueDate(rs.getDate("issue_date").toLocalDate());
+
+        Date expectedReturn = rs.getDate("expected_return_date");
+        if (expectedReturn != null) {
+            issue.setExpectedReturnDate(expectedReturn.toLocalDate());
+        }
+
+        Date returnDate = rs.getDate("return_date");
+        if (returnDate != null) {
+            issue.setReturnDate(returnDate.toLocalDate());
+        }
+
+        issue.setStatus(Status.valueOf(rs.getString("status")));
+        return issue;
+    }
+
+	@Override
+	public boolean alreadyAnAssetToUserOrNot(AssetIssue assetIssue) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+}

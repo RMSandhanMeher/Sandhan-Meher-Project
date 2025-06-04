@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config xmlns="http://java.sun.com/xml/ns/javaee" 
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee /WEB-INF/schema/web-facesconfig_2_0.xsd" 
+              version="2.0" metadata-complete="false">
+
+    <!-- This file must be present with our jar, even if it is empty.  Otherwise, our Java annotations won't get scanned! -->
+
+    <!-- Managed Bean for DoctorDaoImpl -->
+    <managed-bean>
+        <managed-bean-name>doctorDao</managed-bean-name>
+        <managed-bean-class>com.java.jsf.dao.DoctorDaoImpl</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <!-- Managed Bean for MedicationHistoryDaoImpl -->
+    <managed-bean>
+        <managed-bean-name>medicationHistoryDao</managed-bean-name>
+        <managed-bean-class>com.java.jsf.dao.MedicationHistoryDaoImpl</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <!-- Managed Bean for PatientDaoImpl -->
+    <managed-bean>
+        <managed-bean-name>patientDao</managed-bean-name>
+        <managed-bean-class>com.java.jsf.dao.PatientDaoImpl</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <!-- Managed Bean for Patient -->
+    <managed-bean>
+        <managed-bean-name>patient</managed-bean-name>
+        <managed-bean-class>com.java.jsf.model.Patient</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <!-- Managed Bean for Doctor -->
+    <managed-bean>
+        <managed-bean-name>doctor</managed-bean-name>
+        <managed-bean-class>com.java.jsf.model.Doctor</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <!-- Managed Bean for MedicationHistory -->
+    <managed-bean>
+        <managed-bean-name>medicationHistory</managed-bean-name>
+        <managed-bean-class>com.java.jsf.model.MedicationHistory</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <!-- Managed Bean for Specialization -->
+    <managed-bean>
+        <managed-bean-name>specialization</managed-bean-name>
+        <managed-bean-class>com.java.jsf.model.Specialization</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    
+   <managed-bean>
+    <managed-bean-name>hospitalController</managed-bean-name>
+    <managed-bean-class>com.java.jsf.Controller.HospitalController</managed-bean-class>
+    <managed-bean-scope>session</managed-bean-scope>
+    
+    <managed-property>
+        <property-name>doctorDao</property-name>
+        <value>#{doctorDao}</value> <!-- Changed to match bean name -->
+    </managed-property>
+    
+    <managed-property>
+        <property-name>patientDao</property-name>
+        <value>#{patientDao}</value> <!-- Changed to match bean name -->
+    </managed-property>
+    
+    <managed-property>
+        <property-name>medicationHistoryDao</property-name>
+        <value>#{medicationHistoryDao}</value> <!-- Changed to match bean name -->
+    </managed-property>
+</managed-bean>
+
+</faces-config>

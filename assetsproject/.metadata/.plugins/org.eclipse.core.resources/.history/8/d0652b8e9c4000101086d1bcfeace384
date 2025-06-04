@@ -1,0 +1,80 @@
+package com.java.asm.bean;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.java.asm.model.Asset;
+import com.java.asm.model.AssetIssue;
+import com.java.asm.model.User;
+import com.java.asm.service.AssetIssueService;
+import com.java.asm.service.AssetService;
+import com.java.asm.service.UserService;
+
+public class AssetIssueController implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private AssetIssue assetIssue = new AssetIssue();
+    private List<AssetIssue> issueList;
+    private String message;
+
+    private List<Asset> assetList;
+    private List<User> employeeList;
+
+    private final AssetIssueService issueService = new AssetIssueService();
+    private final AssetService assetService = new AssetService();
+    private final UserService userService = new UserService();
+
+    public AssetIssueController() {
+        refreshData();
+    }
+
+    public String issueAsset() {
+        assetIssue.setIssueDate(LocalDate.now());
+        boolean result = issueService.issueAsset(assetIssue);
+        if (result) {
+            message = "Asset issued successfully!";
+            assetIssue = new AssetIssue(); // reset
+        } else {
+            message = "Failed to issue asset.";
+        }
+        refreshData();
+        return null;
+    }
+
+    private void refreshData() {
+        issueList = issueService.getAllIssuedAssets();
+        assetList = assetService.getAllAssets();
+        employeeList = userService.getAllUsers().stream()
+                .filter(u -> u.getRole().name().equals("EMPLOYEE"))
+                .collect(Collectors.toList());
+    }
+
+    // Getters and Setters
+
+    public AssetIssue getAssetIssue() {
+        return assetIssue;
+    }
+
+    public void setAssetIssue(AssetIssue assetIssue) {
+        this.assetIssue = assetIssue;
+    }
+
+    public List<AssetIssue> getIssueList() {
+        return issueList;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public List<Asset> getAssetList() {
+        return assetList;
+    }
+
+    public List<User> getEmployeeList() {
+        return employeeList;
+    }
+}

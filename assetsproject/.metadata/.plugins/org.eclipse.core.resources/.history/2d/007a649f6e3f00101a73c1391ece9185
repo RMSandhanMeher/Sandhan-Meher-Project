@@ -1,0 +1,52 @@
+package com.java.asm.dao.imp;
+
+import java.util.List;
+
+import com.java.asm.dao.AssetDao;
+import com.java.asm.model.Asset;
+
+public class AssetDaoImpl implements AssetDao {
+
+	@Override
+	public boolean addAsset(Asset asset) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Asset getAssetById(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Asset> getAllAssets() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean updateAsset(Asset asset) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean deleteAsset(int id) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean updateAssetQuantity(int assetId, int newQuantity) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public List<Asset> searchAssets(String keyword) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

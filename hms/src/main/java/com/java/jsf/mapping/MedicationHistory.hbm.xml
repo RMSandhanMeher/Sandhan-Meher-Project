@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.java.jsf.model.MedicationHistory" table="MedicationHistory">
+        <id name="medId" column="MedId" type="java.lang.String">
+            <generator class="assigned"/>
+        </id>
+
+        <property name="medicine" column="Medicines" type="java.lang.String"/>
+        <property name="tests" column="Tests" type="java.lang.String"/>
+
+        <!-- Mapping Many-to-One relationship with Patient -->
+        <many-to-one name="patient" class="com.java.jsf.model.Patient" column="PatientId" not-null="true"/>
+    </class>
+</hibernate-mapping>

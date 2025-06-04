@@ -1,0 +1,7 @@
+package com.java.asm.dao.imp;
+
+import com.java.asm.dao.AssetDao;
+
+public class AssetIssueDaoImpl implements AssetDao{
+
+}

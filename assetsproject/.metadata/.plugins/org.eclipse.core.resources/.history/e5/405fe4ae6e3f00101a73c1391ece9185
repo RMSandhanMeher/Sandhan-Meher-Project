@@ -1,0 +1,134 @@
+package com.java.asm.dao.imp;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.java.asm.dao.AssetDao;
+import com.java.asm.model.Asset;
+import com.java.asm.util.ConnectionHelper;
+
+public class AssetDaoImpl implements AssetDao {
+
+	@Override
+	public boolean addAsset(Asset asset) {
+		String sql = "INSERT INTO assets (asset_name, asset_type, description, quantity) VALUES (?, ?, ?, ?)";
+		try {
+			Connection con = ConnectionHelper.getConnection();
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setString(1, asset.getAssetName());
+			ps.setString(2, asset.getAssetType());
+			ps.setString(3, asset.getDescription());
+			ps.setInt(4, asset.getQuantity());
+			return ps.executeUpdate() > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public Asset getAssetById(int id) {
+		String sql = "SELECT * FROM assets WHERE id = ?";
+		try {
+			Connection con = ConnectionHelper.getConnection();
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, id);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next())
+				return mapResultSetToAsset(rs);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public List<Asset> getAllAssets() {
+		List<Asset> list = new ArrayList<>();
+		String sql = "SELECT * FROM assets";
+		try (Connection con = ConnectionHelper.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				list.add(mapResultSetToAsset(rs));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	@Override
+	public boolean updateAsset(Asset asset) {
+		String sql = "UPDATE assets SET asset_name = ?, asset_type = ?, description = ?, quantity = ? WHERE id = ?";
+		try (Connection con = ConnectionHelper.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setString(1, asset.getAssetName());
+			ps.setString(2, asset.getAssetType());
+			ps.setString(3, asset.getDescription());
+			ps.setInt(4, asset.getQuantity());
+			ps.setInt(5, asset.getId());
+			return ps.executeUpdate() > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public boolean deleteAsset(int id) {
+		String sql = "DELETE FROM assets WHERE id = ?";
+		try (Connection con = ConnectionHelper.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setInt(1, id);
+			return ps.executeUpdate() > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public boolean updateAssetQuantity(int assetId, int newQuantity) {
+		String sql = "UPDATE assets SET quantity = ? WHERE id = ?";
+		try (Connection con = ConnectionHelper.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setInt(1, newQuantity);
+			ps.setInt(2, assetId);
+			return ps.executeUpdate() > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public List<Asset> searchAssets(String keyword) {
+		List<Asset> list = new ArrayList<>();
+		String sql = "SELECT * FROM assets WHERE asset_name LIKE ? OR asset_type LIKE ? OR description LIKE ?";
+		try (Connection con = ConnectionHelper.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+			String searchPattern = "%" + keyword + "%";
+			ps.setString(1, searchPattern);
+			ps.setString(2, searchPattern);
+			ps.setString(3, searchPattern);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				list.add(mapResultSetToAsset(rs));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	private Asset mapResultSetToAsset(ResultSet rs) throws SQLException {
+		Asset asset = new Asset();
+		asset.setId(rs.getInt("id"));
+		asset.setAssetName(rs.getString("asset_name"));
+		asset.setAssetType(rs.getString("asset_type"));
+		asset.setDescription(rs.getString("description"));
+		asset.setQuantity(rs.getInt("quantity"));
+		Timestamp ts = rs.getTimestamp("added_on");
+		if (ts != null) {
+			asset.setAddedOn(ts.toLocalDateTime());
+		}
+		return asset;
+	}
+}

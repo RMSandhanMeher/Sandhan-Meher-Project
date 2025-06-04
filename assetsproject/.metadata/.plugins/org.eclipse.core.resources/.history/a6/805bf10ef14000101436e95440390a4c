@@ -1,0 +1,21 @@
+package com.java.asm.dao;
+
+import java.util.List;
+import com.java.asm.model.AssetIssue;
+
+public interface AssetIssueDao {
+
+	boolean issueAsset(AssetIssue assetIssue);
+
+	AssetIssue getIssueById(int id);
+
+	List<AssetIssue> getAllIssuedAssets();
+
+	List<AssetIssue> getIssuesByUserId(int userId);
+
+	boolean returnAsset(int issueId, java.time.LocalDate returnDate);
+
+	List<AssetIssue> getActiveIssues();
+
+	boolean updateIssue(AssetIssue assetIssue);
+}

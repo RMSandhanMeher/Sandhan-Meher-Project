@@ -1,0 +1,84 @@
+<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
+<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
+
+<f:view>
+	<h:form>
+		<h2>Issue Asset</h2>
+
+		<h:outputText value="#{assetIssueController.message}"
+			style="color:red" />
+		<br />
+		<br />
+
+		<h:panelGrid columns="2">
+			<h:outputLabel for="user" value="Issue To (User):" />
+			<h:selectOneMenu value="#{assetIssueController.assetIssue.issuedTo}"
+				id="user">
+				<f:selectItems value="#{assetIssueController.userList}" var="user"
+					itemValue="#{user.id}" itemLabel="#{user.name}" />
+			</h:selectOneMenu>
+
+			<h:outputLabel for="asset" value="Asset:" />
+			<h:selectOneMenu value="#{assetIssueController.assetIssue.assetId}"
+				id="asset">
+				<f:selectItems value="#{assetIssueController.assetList}" var="asset"
+					itemValue="#{asset.id}" itemLabel="#{asset.name}" />
+			</h:selectOneMenu>
+
+			<h:outputLabel for="issuedBy" value="Issued By (Admin ID):" />
+			<h:inputText id="issuedBy"
+				value="#{assetIssueController.assetIssue.issuedBy}" />
+
+			<h:outputLabel for="issueDate" value="Issue Date:" />
+			<h:inputText id="issueDate"
+				value="#{assetIssueController.assetIssue.issueDate}" />
+
+			<h:outputLabel for="expectedReturnDate" value="Expected Return Date:" />
+			<h:inputText id="expectedReturnDate"
+				value="#{assetIssueController.assetIssue.expectedReturnDate}" />
+		</h:panelGrid>
+
+		<h:commandButton value="Issue Asset"
+			action="#{assetIssueController.issueAsset}" />
+	</h:form>
+
+	<hr />
+
+	<h2>All Issued Assets</h2>
+	<h:dataTable value="#{assetIssueController.assetIssueList}" var="issue"
+		border="1">
+		<h:column>
+			<f:facet name="header">ID</f:facet>
+			<h:outputText value="#{issue.id}" />
+		</h:column>
+		<h:column>
+			<f:facet name="header">Asset ID</f:facet>
+			<h:outputText value="#{issue.assetId}" />
+		</h:column>
+		<h:column>
+			<f:facet name="header">Issued To</f:facet>
+			<h:outputText value="#{issue.issuedTo}" />
+		</h:column>
+		<h:column>
+			<f:facet name="header">Issued By</f:facet>
+			<h:outputText value="#{issue.issuedBy}" />
+		</h:column>
+		<h:column>
+			<f:facet name="header">Issue Date</f:facet>
+			<h:outputText value="#{issue.issueDate}" />
+		</h:column>
+		<h:column>
+			<f:facet name="header">Expected Return</f:facet>
+			<h:outputText value="#{issue.expectedReturnDate}" />
+		</h:column>
+		<h:column>
+			<f:facet name="header">Return Date</f:facet>
+			<h:outputText value="#{issue.returnDate}" />
+		</h:column>
+		<h:column>
+			<f:facet name="header">Status</f:facet>
+			<h:outputText value="#{issue.status}" />
+		</h:column>
+	</h:dataTable>
+
+</f:view>

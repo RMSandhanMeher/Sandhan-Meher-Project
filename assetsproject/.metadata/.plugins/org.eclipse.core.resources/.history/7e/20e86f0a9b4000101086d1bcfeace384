@@ -1,0 +1,70 @@
+package com.java.asm.bean;
+
+import com.java.asm.model.AssetIssue;
+import com.java.asm.model.User;
+import com.java.asm.model.Asset;
+import com.java.asm.service.AssetIssueService;
+import com.java.asm.service.AssetService;
+import com.java.asm.service.UserService;
+
+import javax.annotation.PostConstruct;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.List;
+
+public class IssueAssetController implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private AssetIssue assetIssue = new AssetIssue();
+    private List<User> employeeList;
+    private List<Asset> assetList;
+    private String message;
+
+    private final AssetIssueService issueService = new AssetIssueService();
+    private final UserService userService = new UserService();
+    private final AssetService assetService = new AssetService();
+
+    @PostConstruct
+    public void init() {
+        employeeList = userService.getAllUsers().stream()
+                .filter(u -> u.getRole().name().equals("EMPLOYEE"))
+                .toList();
+        assetList = assetService.getAllAssets();
+    }
+
+    public String issueAsset() {
+        assetIssue.setIssueDate(LocalDate.now());
+        assetIssue.setStatus(com.java.asm.model.Status.ISSUED);
+        assetIssue.setIssuedBy(1); // Hardcoded for now; replace with session admin ID
+        boolean result = issueService.issueAsset(assetIssue);
+        message = result ? "Asset issued successfully!" : "Failed to issue asset.";
+        assetIssue = new AssetIssue(); // Reset form
+        return null;
+    }
+
+    // Getters and setters
+    public AssetIssue getAssetIssue() {
+        return assetIssue;
+    }
+
+    public void setAssetIssue(AssetIssue assetIssue) {
+        this.assetIssue = assetIssue;
+    }
+
+    public List<User> getEmployeeList() {
+        return employeeList;
+    }
+
+    public List<Asset> getAssetList() {
+        return assetList;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}

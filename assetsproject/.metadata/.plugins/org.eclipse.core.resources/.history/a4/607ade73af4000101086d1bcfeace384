@@ -1,0 +1,111 @@
+package com.java.asm.service;
+
+import com.java.asm.dao.AssetDao;
+import com.java.asm.dao.imp.AssetDaoImpl;
+import com.java.asm.model.Asset;
+import org.apache.log4j.Logger;
+
+import java.util.List;
+
+public class AssetService {
+
+    private static final Logger logger = Logger.getLogger(AssetService.class);
+    private final AssetDao assetDao = new AssetDaoImpl();
+
+    public boolean addAsset(Asset asset) {
+        try {
+            boolean result = assetDao.addAsset(asset);
+            if (result) {
+                logger.info("service layer :addAsset: Asset added - " + asset.getAssetName());
+            } else {
+                logger.info("service layer :addAsset: Failed to add asset - " + asset.getAssetName());
+            }
+            return result;
+        } catch (Exception e) {
+            logger.error("service layer :addAsset: Error - " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public Asset getAssetById(int id) {
+        try {
+            Asset asset = assetDao.getAssetById(id);
+            if (asset != null) {
+                logger.info("service layer :getAssetById: Asset found - ID=" + id);
+            } else {
+                logger.info("service layer :getAssetById: Asset not found - ID=" + id);
+            }
+            return asset;
+        } catch (Exception e) {
+            logger.error("service layer :getAssetById: Error - " + e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public List<Asset> getAllAssets() {
+        try {
+            List<Asset> list = assetDao.getAllAssets();
+            logger.info("service layer :getAllAssets: Total assets fetched = " + list.size());
+            return list;
+        } catch (Exception e) {
+            logger.error("service layer :getAllAssets: Error - " + e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public boolean updateAsset(Asset asset) {
+        try {
+            boolean result = assetDao.updateAsset(asset);
+            if (result) {
+                logger.info("service layer :updateAsset: Asset updated - ID=" + asset.getId());
+            } else {
+                logger.info("service layer :updateAsset: Failed to update asset - ID=" + asset.getId());
+            }
+            return result;
+        } catch (Exception e) {
+            logger.error("service layer :updateAsset: Error - " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public boolean deleteAsset(int id) {
+        try {
+            boolean result = assetDao.deleteAsset(id);
+            if (result) {
+                logger.info("service layer :deleteAsset: Asset deleted - ID=" + id);
+            } else {
+                logger.info("service layer :deleteAsset: Failed to delete asset - ID=" + id);
+            }
+            return result;
+        } catch (Exception e) {
+            logger.error("service layer :deleteAsset: Error - " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public boolean updateAssetQuantity(int assetId, int newQuantity) {
+        try {
+            boolean result = assetDao.updateAssetQuantity(assetId, newQuantity);
+            if (result) {
+                logger.info("service layer :updateAssetQuantity: Quantity updated - ID=" + assetId + ", New Quantity=" + newQuantity);
+            } else {
+                logger.info("service layer :updateAssetQuantity: Failed to update quantity - ID=" + assetId);
+            }
+            return result;
+        } catch (Exception e) {
+            logger.error("service layer :updateAssetQuantity: Error - " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public List<Asset> searchAssets(String keyword) {
+        try {
+            List<Asset> results = assetDao.searchAssets(keyword);
+            logger.info("service layer :searchAssets: Assets found for keyword '" + keyword + "' = " + results.size());
+            return results;
+        } catch (Exception e) {
+            logger.error("service layer :searchAssets: Error - " + e.getMessage(), e);
+            return null;
+        }
+    }
+}

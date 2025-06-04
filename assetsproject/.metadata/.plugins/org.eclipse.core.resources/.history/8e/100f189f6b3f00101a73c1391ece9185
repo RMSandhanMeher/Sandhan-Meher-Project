@@ -1,0 +1,66 @@
+package com.java.model;
+
+import java.time.LocalDateTime;
+
+public class Asset {
+
+	private int id;
+
+	private String assetName;
+
+	private String assetType;
+
+	private String description;
+
+	private int quantity;
+
+	private LocalDateTime addedOn;
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getAssetName() {
+		return assetName;
+	}
+
+	public void setAssetName(String assetName) {
+		this.assetName = assetName;
+	}
+
+	public String getAssetType() {
+		return assetType;
+	}
+
+	public void setAssetType(String assetType) {
+		this.assetType = assetType;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
+	public LocalDateTime getAddedOn() {
+		return addedOn;
+	}
+
+	public void setAddedOn(LocalDateTime addedOn) {
+		this.addedOn = addedOn;
+	}
+}

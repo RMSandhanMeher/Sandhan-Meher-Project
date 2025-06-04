@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+                                  http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_3.xsd"
+	version="2.3">
+
+	<managed-bean>
+		<managed-bean-name>userController</managed-bean-name>
+		<managed-bean-class>com.java.asm.bean.UserController</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<navigation-rule>
+		<from-view-id>/view/auth/login.jsp</from-view-id>
+		<navigation-case>
+			<from-outcome>welcome</from-outcome>
+			<to-view-id>/view/welcome.jsp</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>adminDashboard</from-outcome>
+			<to-view-id>/view/admin.jsp</to-view-id> <!-- if exists -->
+		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
+		<from-view-id>/view/auth/signup.jsp</from-view-id>
+		<navigation-case>
+			<from-outcome>welcome</from-outcome>
+			<to-view-id>/view/welcome.jsp</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>adminDashboard</from-outcome>
+			<to-view-id>/view/admin.jsp</to-view-id> <!-- if exists -->
+		</navigation-case>
+	</navigation-rule>
+
+</faces-config>

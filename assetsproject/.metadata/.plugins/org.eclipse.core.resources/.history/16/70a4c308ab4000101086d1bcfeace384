@@ -1,0 +1,78 @@
+package com.java.asm.bean;
+
+import com.java.asm.model.AssetIssue;
+import com.java.asm.model.User;
+import com.java.asm.model.Asset;
+import com.java.asm.service.AssetIssueService;
+import com.java.asm.service.AssetService;
+import com.java.asm.service.UserService;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class AssetIssueController implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private AssetIssue assetIssue = new AssetIssue();
+    private List<AssetIssue> assetIssueList;
+    private String message;
+
+    private final AssetIssueService assetIssueService = new AssetIssueService();
+    private final UserService userService = new UserService();
+    private final AssetService assetService = new AssetService();
+
+    public String issueAsset() {
+        boolean exists = assetIssueService.checkIfIssueExists(assetIssue.getUserId(), assetIssue.getAssetId());
+        if (exists) {
+            message = "This asset is already issued to the user.";
+            return null;
+        }
+
+        boolean result = assetIssueService.issueAsset(assetIssue);
+        if (result) {
+            message = "Asset issued successfully!";
+            assetIssue = new AssetIssue(); // reset
+        } else {
+            message = "Failed to issue asset.";
+        }
+        refreshIssues();
+        return null;
+    }
+
+    public void refreshIssues() {
+        assetIssueList = assetIssueService.getAllIssues();
+    }
+
+    // Getters and Setters
+    public AssetIssue getAssetIssue() {
+        return assetIssue;
+    }
+
+    public void setAssetIssue(AssetIssue assetIssue) {
+        this.assetIssue = assetIssue;
+    }
+
+    public List<AssetIssue> getAssetIssueList() {
+        if (assetIssueList == null) {
+            refreshIssues();
+        }
+        return assetIssueList;
+    }
+
+    public List<User> getUserList() {
+        return userService.getAllUsers();
+    }
+
+    public List<Asset> getAssetList() {
+        return assetService.getAllAssets();
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}

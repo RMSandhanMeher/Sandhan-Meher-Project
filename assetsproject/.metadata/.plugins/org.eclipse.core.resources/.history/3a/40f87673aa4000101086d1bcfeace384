@@ -1,0 +1,54 @@
+package com.java.asm.bean;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.List;
+
+import com.java.asm.model.AssetIssue;
+import com.java.asm.service.AssetIssueService;
+
+public class AssetIssueController implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private AssetIssue assetIssue = new AssetIssue();
+    private List<AssetIssue> issueList;
+    private String message;
+
+    private final AssetIssueService issueService = new AssetIssueService();
+
+    public AssetIssueController() {
+        issueList = issueService.getAllIssuedAssets();
+    }
+
+    public String issueAsset() {
+        assetIssue.setIssueDate(LocalDate.now());
+        boolean result = issueService.issueAsset(assetIssue);
+        if (result) {
+            message = "Asset issued successfully!";
+            assetIssue = new AssetIssue(); // reset
+        } else {
+            message = "Failed to issue asset.";
+        }
+        issueList = issueService.getAllIssuedAssets(); // refresh
+        return null;
+    }
+
+    // Getters and Setters
+
+    public AssetIssue getAssetIssue() {
+        return assetIssue;
+    }
+
+    public void setAssetIssue(AssetIssue assetIssue) {
+        this.assetIssue = assetIssue;
+    }
+
+    public List<AssetIssue> getIssueList() {
+        return issueList;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+}

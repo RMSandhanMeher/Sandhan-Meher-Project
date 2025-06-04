@@ -1,0 +1,7 @@
+package com.java.facade.eg1;
+
+public class MyResource {
+	public static void main(String[] args) {
+
+	}
+}

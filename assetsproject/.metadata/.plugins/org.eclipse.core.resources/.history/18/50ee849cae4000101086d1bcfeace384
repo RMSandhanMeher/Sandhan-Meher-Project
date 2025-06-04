@@ -1,0 +1,132 @@
+package com.java.asm.bean;
+
+import com.java.asm.model.AssetIssue;
+import com.java.asm.model.User;
+import com.java.asm.model.Asset;
+import com.java.asm.service.AssetIssueService;
+import com.java.asm.service.AssetService;
+import com.java.asm.service.UserService;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+public class AssetIssueController implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private AssetIssue assetIssue = new AssetIssue();
+    private List<AssetIssue> assetIssueList;
+    private String message;
+    private String messageType; // "success" or "error"
+
+    private final AssetIssueService assetIssueService = new AssetIssueService();
+    private final UserService userService = new UserService();
+    private final AssetService assetService = new AssetService();
+
+    public String issueAsset() {
+        try {
+            // Validate inputs
+            if (assetIssue.getIssuedTo() <= 0) {
+                setErrorMessage("Please select a valid user");
+                return null;
+            }
+            
+            if (assetIssue.getAssetId() <= 0) {
+                setErrorMessage("Please select a valid asset");
+                return null;
+            }
+            
+            // Check if asset is available
+            Asset asset = assetService.getAssetById(assetIssue.getAssetId());
+            if (asset == null || asset.getQuantity() <= 0) {
+                setErrorMessage("Selected asset is not available");
+                return null;
+            }
+
+            // Set default values
+            assetIssue.setIssueDate(LocalDate.now());
+            assetIssue.setIssuedBy(1); // Default admin ID - should be current user in real app
+            assetIssue.setStatus(Status.ISSUED);
+
+            // Check for existing issue
+            boolean exists = assetIssueService.checkIfIssueExists(assetIssue.getIssuedTo(), assetIssue.getAssetId());
+            if (exists) {
+                setErrorMessage("This asset is already issued to the selected user");
+                return null;
+            }
+
+            // Issue the asset
+            boolean result = assetIssueService.issueAsset(assetIssue);
+            if (result) {
+                // Update asset quantity
+                asset.setQuantity(asset.getQuantity() - 1);
+                assetService.updateAsset(asset);
+                
+                setSuccessMessage("Asset issued successfully!");
+                assetIssue = new AssetIssue(); // reset form
+            } else {
+                setErrorMessage("Failed to issue asset. Please try again.");
+            }
+        } catch (Exception e) {
+            setErrorMessage("An error occurred: " + e.getMessage());
+        }
+        refreshIssues();
+        return null;
+    }
+
+    private void setSuccessMessage(String msg) {
+        this.message = msg;
+        this.messageType = "success";
+    }
+
+    private void setErrorMessage(String msg) {
+        this.message = msg;
+        this.messageType = "error";
+    }
+
+    public void refreshIssues() {
+        assetIssueList = assetIssueService.getAllIssues();
+    }
+
+    // Getters and Setters
+    public AssetIssue getAssetIssue() {
+        return assetIssue;
+    }
+
+    public void setAssetIssue(AssetIssue assetIssue) {
+        this.assetIssue = assetIssue;
+    }
+
+    public List<AssetIssue> getAssetIssueList() {
+        if (assetIssueList == null) {
+            refreshIssues();
+        }
+        return assetIssueList;
+    }
+
+    public List<User> getUserList() {
+        return userService.getAllUsers();
+    }
+
+    public List<Asset> getAssetList() {
+        return assetService.getAllAssets();
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
+    }
+}

@@ -1,0 +1,80 @@
+package com.java.asm.bean;
+
+import com.java.asm.model.AssetIssue;
+import com.java.asm.model.User;
+import com.java.asm.model.Asset;
+import com.java.asm.service.AssetIssueService;
+import com.java.asm.service.AssetService;
+import com.java.asm.service.UserService;
+
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+
+@ManagedBean
+@SessionScoped
+public class AssetIssueController implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private AssetIssue assetIssue = new AssetIssue();
+    private List<AssetIssue> issueList;
+    private String message;
+
+    private final AssetIssueService assetIssueService = new AssetIssueService();
+    private final AssetService assetService = new AssetService();
+    private final UserService userService = new UserService();
+
+    public String issueAsset() {
+        assetIssue.setIssueDate(new Date());
+        assetIssue.setStatus("ISSUED");
+
+        boolean result = assetIssueService.issueAsset(assetIssue);
+        if (result) {
+            message = "Asset issued successfully!";
+            assetIssue = new AssetIssue(); // reset
+        } else {
+            message = "Failed to issue asset.";
+        }
+        refreshIssues();
+        return null;
+    }
+
+    public void refreshIssues() {
+        issueList = assetIssueService.getAllIssues();
+    }
+
+    public List<AssetIssue> getIssueList() {
+        if (issueList == null) {
+            refreshIssues();
+        }
+        return issueList;
+    }
+
+    public List<Asset> getAvailableAssets() {
+        return assetService.getAllAssets();
+    }
+
+    public List<User> getEmployees() {
+        return userService.getUsersByRole("EMPLOYEE");
+    }
+
+    // Getters and Setters
+    public AssetIssue getAssetIssue() {
+        return assetIssue;
+    }
+
+    public void setAssetIssue(AssetIssue assetIssue) {
+        this.assetIssue = assetIssue;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}

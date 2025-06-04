@@ -1,0 +1,7 @@
+package com.java.asm;
+
+public class MyResource {
+	public static void main(String[] args) {
+
+	}
+}

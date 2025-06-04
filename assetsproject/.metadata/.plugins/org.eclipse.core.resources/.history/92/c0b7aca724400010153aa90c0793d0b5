@@ -1,0 +1,185 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="f" uri="http://java.sun.com/jsf/core"%>
+<%@ taglib prefix="h" uri="http://java.sun.com/jsf/html"%>
+
+<f:view>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Expenses Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header Section -->
+        <header class="mb-8 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Expense Tracker</h1>
+                <p class="text-gray-500">Track your group expenses easily</p>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
+                <i class="fas fa-wallet text-primary-600 text-xl"></i>
+            </div>
+        </header>
+
+        <!-- Main Card -->
+        <div class="bg-white rounded-xl card-shadow overflow-hidden fade-in">
+            <!-- Card Header -->
+            <div class="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-4">
+                <h2 class="text-xl font-semibold text-white">Daily Expenses</h2>
+            </div>
+            
+            <!-- Card Content -->
+            <div class="p-6">
+                <!-- Group ID Form -->
+                <div class="mb-8 p-4 bg-primary-50 rounded-lg">
+                    <h:form class="flex items-end gap-4">
+                        <div class="flex-1">
+                            <label for="groupId" class="block text-sm font-medium text-gray-700 mb-1">Group ID</label>
+                            <div class="relative">
+                                <h:inputText id="groupId" value="#{expenseController.groupId}"
+                                    required="true" styleClass="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all" />
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <i class="fas fa-users text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <h:commandButton value="Load Expenses"
+                            action="#{expenseController.dailyExpensesListMethod}"
+                            styleClass="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2" >
+                            <i class="fas fa-sync-alt"></i> Load
+                        </h:commandButton>
+                    </h:form>
+                </div>
+
+                <!-- Expenses Table -->
+                <div class="overflow-x-auto">
+                    <h:form>
+                        <h:dataTable
+                            value="#{expenseController.dailyExpensesList}"
+                            var="expense"
+                            styleClass="w-full rounded-lg overflow-hidden"
+                            headerClass="bg-gray-100 text-gray-700 text-left font-semibold"
+                            rowClasses="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+
+                            <h:column>
+                                <f:facet name="header">
+                                    <div class="px-4 py-3 flex items-center gap-2">
+                                        <i class="fas fa-hashtag text-gray-400"></i>
+                                        <span>ID</span>
+                                    </div>
+                                </f:facet>
+                                <div class="px-4 py-3 text-gray-600">#{expense.expId}</div>
+                            </h:column>
+                            
+                            <h:column>
+                                <f:facet name="header">
+                                    <div class="px-4 py-3 flex items-center gap-2">
+                                        <i class="fas fa-align-left text-gray-400"></i>
+                                        <span>Description</span>
+                                    </div>
+                                </f:facet>
+                                <div class="px-4 py-3 text-gray-800 font-medium">#{expense.expenseDescription}</div>
+                            </h:column>
+                            
+                            <h:column>
+                                <f:facet name="header">
+                                    <div class="px-4 py-3 flex items-center gap-2">
+                                        <i class="fas fa-money-bill-wave text-gray-400"></i>
+                                        <span>Amount</span>
+                                    </div>
+                                </f:facet>
+                                <div class="px-4 py-3 text-primary-600 font-semibold">
+                                    $#{expense.amount}
+                                </div>
+                            </h:column>
+                            
+                            <h:column>
+                                <f:facet name="header">
+                                    <div class="px-4 py-3 flex items-center gap-2">
+                                        <i class="fas fa-calendar-day text-gray-400"></i>
+                                        <span>Date</span>
+                                    </div>
+                                </f:facet>
+                                <div class="px-4 py-3 text-gray-600">
+                                    <h:outputText value="#{expense.expenseDate}">
+                                        <f:convertDateTime pattern="MMM dd, yyyy" />
+                                    </h:outputText>
+                                </div>
+                            </h:column>
+                            
+                            <h:column>
+                                <f:facet name="header">
+                                    <div class="px-4 py-3 flex items-center gap-2">
+                                        <i class="fas fa-user-tag text-gray-400"></i>
+                                        <span>Paid By</span>
+                                    </div>
+                                </f:facet>
+                                <div class="px-4 py-3">
+                                    <span class="bg-primary-100 text-primary-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                        User #{expense.paidBy}
+                                    </span>
+                                </div>
+                            </h:column>
+                        </h:dataTable>
+                    </h:form>
+                </div>
+                
+                <!-- Empty State -->
+                <h:form rendered="#{empty expenseController.dailyExpensesList}">
+                    <div class="text-center py-12">
+                        <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-receipt text-gray-400 text-3xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-700 mb-1">No expenses found</h3>
+                        <p class="text-gray-500 max-w-md mx-auto">Enter a Group ID and click "Load Expenses" to view your group's spending</p>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="mt-8 text-center text-gray-500 text-sm">
+            <p>© 2023 Expense Tracker. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>
+</f:view>

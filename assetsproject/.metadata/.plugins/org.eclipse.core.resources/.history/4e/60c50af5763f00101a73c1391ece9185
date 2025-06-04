@@ -1,0 +1,5 @@
+package com.java.asm.util;
+
+public class EncryptPassword {
+
+}

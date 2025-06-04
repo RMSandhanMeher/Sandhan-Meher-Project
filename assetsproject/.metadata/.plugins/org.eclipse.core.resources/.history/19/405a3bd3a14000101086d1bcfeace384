@@ -1,0 +1,112 @@
+package com.java.asm.bean;
+
+import com.java.asm.model.Asset;
+import com.java.asm.service.AssetService;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import java.io.Serializable;
+import java.util.List;
+
+public class AssetController implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	private Asset asset = new Asset();
+	private List<Asset> assetList;
+	private String searchKeyword;
+
+	private final AssetService assetService = new AssetService();
+
+	public void init() {
+		refreshAssets();
+	}
+
+	public void addAsset() {
+		try {
+			if (assetService.addAsset(asset)) {
+				addMessage("Success", "Asset added successfully!");
+				asset = new Asset();
+				refreshAssets();
+			} else {
+				addMessage("Error", "Failed to add asset.");
+			}
+		} catch (Exception e) {
+			addMessage("Error", "An error occurred while adding asset.");
+		}
+	}
+
+	public void updateAsset() {
+		try {
+			if (assetService.updateAsset(asset)) {
+				addMessage("Success", "Asset updated successfully!");
+				asset = new Asset();
+				refreshAssets();
+			} else {
+				addMessage("Error", "Failed to update asset.");
+			}
+		} catch (Exception e) {
+			addMessage("Error", "An error occurred while updating asset.");
+		}
+	}
+
+	public void deleteAsset(int id) {
+		try {
+			if (assetService.deleteAsset(id)) {
+				addMessage("Success", "Asset deleted successfully!");
+				refreshAssets();
+			} else {
+				addMessage("Error", "Failed to delete asset.");
+			}
+		} catch (Exception e) {
+			addMessage("Error", "An error occurred while deleting asset.");
+		}
+	}
+
+	public void editAsset(Asset selectedAsset) {
+		this.asset = selectedAsset;
+	}
+
+	public void cancelEdit() {
+		this.asset = new Asset();
+	}
+
+	public void searchAssets() {
+		try {
+			assetList = assetService.searchAssets(searchKeyword);
+			if (assetList == null || assetList.isEmpty()) {
+				addMessage("Info", "No assets found matching your criteria.");
+			}
+		} catch (Exception e) {
+			addMessage("Error", "An error occurred during search.");
+		}
+	}
+
+	public void refreshAssets() {
+		assetList = assetService.getAllAssets();
+	}
+
+	private void addMessage(String summary, String detail) {
+		FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);
+		FacesContext.getCurrentInstance().addMessage(null, message);
+	}
+
+	public Asset getAsset() {
+		return asset;
+	}
+
+	public void setAsset(Asset asset) {
+		this.asset = asset;
+	}
+
+	public List<Asset> getAssetList() {
+		return assetList;
+	}
+
+	public String getSearchKeyword() {
+		return searchKeyword;
+	}
+
+	public void setSearchKeyword(String searchKeyword) {
+		this.searchKeyword = searchKeyword;
+	}
+}

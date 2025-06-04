@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.java.resolve_complains.model.Resolve" table="RESOLVE">
+        <id name="resolveId" type="java.lang.String">
+            <column name="resolveId"/>
+            <generator class="assigned"/>
+        </id>
+
+        <many-to-one name="complaint" class="com.java.resolve_complains.model.Complaint" fetch="select">
+            <column name="complaintID" not-null="true"/>
+        </many-to-one>
+
+        <property name="resolveDate" type="java.lang.String">
+            <column name="resolveDate"/>
+        </property>
+
+        <property name="complaintDate" type="java.sql.Date">
+            <column name="complaintDate"/>
+        </property>
+
+        <property name="resolvedBy" type="java.lang.String">
+            <column name="resolvedBy"/>
+        </property>
+
+        <property name="comments" type="java.lang.String">
+            <column name="comments"/>
+        </property>
+
+        <property name="tat" type="long">
+            <column name="tat"/>
+        </property>
+    </class>
+</hibernate-mapping>

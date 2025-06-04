@@ -1,0 +1,125 @@
+package com.java.asm.bean;
+
+import com.java.asm.model.Asset;
+import com.java.asm.model.AssetIssue;
+import com.java.asm.model.Status;
+import com.java.asm.model.User;
+import com.java.asm.service.AssetIssueService;
+import com.java.asm.service.AssetService;
+import com.java.asm.service.UserService;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+@ManagedBean(name = "assetIssueController")
+@SessionScoped
+public class AssetIssueController implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    private AssetIssue assetIssue = new AssetIssue();
+    private String expectedReturnDateString;
+    private String message;
+    private String messageType;
+
+    private final AssetIssueService assetIssueService = new AssetIssueService();
+    private final UserService userService = new UserService();
+    private final AssetService assetService = new AssetService();
+
+    // Issue Asset
+    public String issueAsset() {
+        try {
+            if (expectedReturnDateString != null && !expectedReturnDateString.isEmpty()) {
+                assetIssue.setExpectedReturnDate(LocalDate.parse(expectedReturnDateString, FORMATTER));
+            }
+
+            if (assetIssue.getAssetId() <= 0 || assetIssue.getIssuedTo() <= 0) {
+                setErrorMessage("Please select both asset and user.");
+                return null;
+            }
+
+            Asset asset = assetService.getAssetById(assetIssue.getAssetId());
+            if (asset == null || asset.getQuantity() <= 0) {
+                setErrorMessage("Selected asset is unavailable.");
+                return null;
+            }
+
+            if (assetIssueService.checkIfIssueExists(assetIssue.getIssuedTo(), assetIssue.getAssetId())) {
+                setErrorMessage("This asset is already issued to the user.");
+                return null;
+            }
+
+            // Set issue metadata
+            assetIssue.setIssueDate(LocalDate.now());
+            assetIssue.setIssuedBy(1); // Replace with logged-in user ID in real app
+            assetIssue.setStatus(Status.ISSUED);
+
+            if (assetIssueService.issueAsset(assetIssue)) {
+                // Update inventory
+                asset.setQuantity(asset.getQuantity() - 1);
+                assetService.updateAsset(asset);
+
+                setSuccessMessage("Asset issued successfully.");
+                assetIssue = new AssetIssue(); // reset form
+                expectedReturnDateString = null;
+            } else {
+                setErrorMessage("Failed to issue asset.");
+            }
+        } catch (Exception e) {
+            setErrorMessage("Error: " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    // Helpers
+    private void setSuccessMessage(String msg) {
+        this.message = msg;
+        this.messageType = "success";
+    }
+
+    private void setErrorMessage(String msg) {
+        this.message = msg;
+        this.messageType = "error";
+    }
+
+    // Getters/Setters
+    public AssetIssue getAssetIssue() {
+        return assetIssue;
+    }
+
+    public void setAssetIssue(AssetIssue assetIssue) {
+        this.assetIssue = assetIssue;
+    }
+
+    public String getExpectedReturnDateString() {
+        return expectedReturnDateString;
+    }
+
+    public void setExpectedReturnDateString(String expectedReturnDateString) {
+        this.expectedReturnDateString = expectedReturnDateString;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public List<User> getUserList() {
+        return userService.getAllUsers();
+    }
+
+    public List<Asset> getAssetList() {
+        return assetService.getAllAssets();
+    }
+}

@@ -1,0 +1,137 @@
+<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
+
+<f:view>
+    <h:form>
+        <h2>Issue Asset</h2>
+
+        <!-- Success/Error Message -->
+        <h:panelGroup rendered="#{not empty assetIssueController.message}">
+            <h:panelGroup style="padding: 10px; margin: 10px 0; border-radius: 4px; 
+                background-color: #{assetIssueController.messageType == 'success' ? '#dff0d8' : '#f2dede'}; 
+                color: #{assetIssueController.messageType == 'success' ? '#3c763d' : '#a94442'}; 
+                border: 1px solid #{assetIssueController.messageType == 'success' ? '#d6e9c6' : '#ebccd1'};">
+                <h:outputText value="#{assetIssueController.message}" />
+            </h:panelGroup>
+        </h:panelGroup>
+
+        <h:panelGrid columns="3">
+            <!-- User Selection -->
+            <h:outputLabel for="user" value="User:" />
+            <h:selectOneMenu id="user" value="#{assetIssueController.assetIssue.issuedTo}" required="true" 
+                requiredMessage="Please select a user">
+                <f:selectItem itemValue="" itemLabel="-- Select User --" />
+                <f:selectItems value="#{assetIssueController.userList}" var="user"
+                    itemValue="#{user.id}" itemLabel="#{user.name} (#{user.role})" />
+            </h:selectOneMenu>
+            <h:message for="user" style="color:red" />
+
+            <!-- Asset Selection -->
+            <h:outputLabel for="asset" value="Asset:" />
+            <h:selectOneMenu id="asset" value="#{assetIssueController.assetIssue.assetId}" required="true"
+                requiredMessage="Please select an asset">
+                <f:selectItem itemValue="" itemLabel="-- Select Asset --" />
+                <f:selectItems value="#{assetIssueController.assetList}" var="asset"
+                    itemValue="#{asset.id}" itemLabel="#{asset.assetName} (Qty: #{asset.quantity})" />
+            </h:selectOneMenu>
+            <h:message for="asset" style="color:red" />
+
+            <!-- Expected Return Date -->
+            <h:outputLabel for="expectedReturnDate" value="Expected Return Date:" />
+            <h:inputText id="expectedReturnDate" value="#{assetIssueController.assetIssue.expectedReturnDate}">
+                <f:convertDateTime pattern="yyyy-MM-dd" type="date" />
+                <f:passThroughAttribute name="type" value="date" />
+            </h:inputText>
+            <h:message for="expectedReturnDate" style="color:red" />
+        </h:panelGrid>
+
+        <h:commandButton value="Issue Asset" action="#{assetIssueController.issueAsset}" 
+            styleClass="btn btn-primary" />
+    </h:form>
+
+    <hr />
+
+    <h2>Issued Assets</h2>
+    <h:dataTable value="#{assetIssueController.assetIssueList}" var="issue"
+                 styleClass="table table-bordered table-striped" headerClass="table-header">
+        <h:column>
+            <f:facet name="header">ID</f:facet>
+            <h:outputText value="#{issue.id}" />
+        </h:column>
+        <h:column>
+            <f:facet name="header">Asset</f:facet>
+            <h:outputText value="#{assetIssueController.assetService.getAssetById(issue.assetId).assetName}" />
+        </h:column>
+        <h:column>
+            <f:facet name="header">Issued To</f:facet>
+            <h:outputText value="#{assetIssueController.userService.getUserById(issue.issuedTo).name}" />
+        </h:column>
+        <h:column>
+            <f:facet name="header">Issued By</f:facet>
+            <h:outputText value="#{assetIssueController.userService.getUserById(issue.issuedBy).name}" />
+        </h:column>
+        <h:column>
+            <f:facet name="header">Issue Date</f:facet>
+            <h:outputText value="#{issue.issueDate}">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+            </h:outputText>
+        </h:column>
+        <h:column>
+            <f:facet name="header">Expected Return</f:facet>
+            <h:outputText value="#{issue.expectedReturnDate}">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+            </h:outputText>
+        </h:column>
+        <h:column>
+            <f:facet name="header">Status</f:facet>
+            <h:outputText value="#{issue.status}" styleClass="status-#{issue.status.toString().toLowerCase()}" />
+        </h:column>
+        <h:column rendered="#{issue.status == 'ISSUED'}">
+            <f:facet name="header">Action</f:facet>
+            <h:commandButton value="Return" action="#{assetIssueController.returnAsset(issue.id)}" 
+                styleClass="btn btn-sm btn-success" />
+        </h:column>
+    </h:dataTable>
+</f:view>
+
+<!-- CSS Styling -->
+<style>
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        color: #212529;
+        border-collapse: collapse;
+    }
+    .table th, .table td {
+        border: 1px solid #dee2e6;
+        padding: 0.75rem;
+        text-align: left;
+    }
+    .table-header {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+    .status-issued {
+        color: #dc3545;
+        font-weight: bold;
+    }
+    .status-returned {
+        color: #28a745;
+        font-weight: bold;
+    }
+    .btn {
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.25rem;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-primary {
+        color: #fff;
+        background-color: #007bff;
+    }
+    .btn-success {
+        color: #fff;
+        background-color: #28a745;
+    }
+</style>

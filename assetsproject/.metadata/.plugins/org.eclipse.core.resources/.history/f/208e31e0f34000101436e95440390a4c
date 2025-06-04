@@ -1,0 +1,45 @@
+<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
+
+<f:view>
+    <h:form>
+        <h2>Issue Asset</h2>
+
+        <!-- Feedback Message -->
+        <h:panelGroup rendered="#{not empty assetIssueController.message}">
+            <div style="margin: 10px; padding: 10px; border-radius: 5px;
+                background-color: #{assetIssueController.messageType == 'success' ? '#d4edda' : '#f8d7da'};
+                color: #{assetIssueController.messageType == 'success' ? '#155724' : '#721c24'};
+                border: 1px solid #{assetIssueController.messageType == 'success' ? '#c3e6cb' : '#f5c6cb'};">
+                <h:outputText value="#{assetIssueController.message}" />
+            </div>
+        </h:panelGroup>
+
+        <h:panelGrid columns="2" cellpadding="5">
+            <!-- User Dropdown -->
+            <h:outputLabel for="user" value="Select User:" />
+            <h:selectOneMenu id="user" value="#{assetIssueController.assetIssue.issuedTo}" required="true">
+                <f:selectItem itemValue="" itemLabel="-- Select --" />
+                <f:selectItems value="#{assetIssueController.userList}" var="user"
+                    itemValue="#{user.id}" itemLabel="#{user.name}" />
+            </h:selectOneMenu>
+
+            <!-- Asset Dropdown -->
+            <h:outputLabel for="asset" value="Select Asset:" />
+            <h:selectOneMenu id="asset" value="#{assetIssueController.assetIssue.assetId}" required="true">
+                <f:selectItem itemValue="" itemLabel="-- Select --" />
+                <f:selectItems value="#{assetIssueController.assetList}" var="asset"
+                    itemValue="#{asset.id}" itemLabel="#{asset.assetName} (Qty: #{asset.quantity})" />
+            </h:selectOneMenu>
+
+            <!-- Expected Return Date -->
+            <h:outputLabel for="expectedReturnDate" value="Expected Return Date (yyyy-MM-dd):" />
+            <h:inputText id="expectedReturnDate" value="#{assetIssueController.expectedReturnDateString}">
+                <f:convertDateTime pattern="yyyy-MM-dd" />
+            </h:inputText>
+        </h:panelGrid>
+
+        <br />
+        <h:commandButton value="Issue Asset" action="#{assetIssueController.issueAsset}" />
+    </h:form>
+</f:view>

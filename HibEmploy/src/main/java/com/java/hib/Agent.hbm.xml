@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.java.hib.Agent" table="Agent">
+        <id name="agentID" type="int">
+            <column name="AgentId"/>
+            <generator class="increment"/>
+        </id>
+        
+        <property name="name" type="java.lang.String">
+            <column name="Name"/>
+        </property>
+        
+        <property name="city" type="java.lang.String">
+            <column name="City"/>
+        </property>
+        
+        <property name="Gender" column="Gender">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">com.java.hib.Gender</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+
+        <property name="MaritalStatus" type="java.lang.String">
+            <column name="MaritalStatus"/>
+        </property>
+
+        <property name="premium" type="double">
+            <column name="Premium"/>
+        </property>
+    </class>
+</hibernate-mapping>

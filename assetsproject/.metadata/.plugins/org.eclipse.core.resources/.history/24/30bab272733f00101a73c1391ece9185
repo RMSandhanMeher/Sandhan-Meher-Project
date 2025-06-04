@@ -1,0 +1,33 @@
+package com.java.asm;
+
+import com.java.asm.dao.AssetIssueDao;
+import com.java.asm.dao.imp.AssetIssueDaoImpl;
+import com.java.asm.model.AssetIssue;
+import com.java.asm.model.Status;
+
+import java.time.LocalDate;
+import java.util.List;
+
+public class MyResource {
+    public static void main(String[] args) {
+        AssetIssueDao dao = new AssetIssueDaoImpl();
+
+        // Issue an asset
+        AssetIssue issue = new AssetIssue();
+        issue.setAssetId(1);        // ensure this exists in assets table
+        issue.setIssuedTo(2);       // ensure this user exists
+        issue.setIssuedBy(1);       // the admin or issuer
+        issue.setIssueDate(LocalDate.now());
+        issue.setExpectedReturnDate(LocalDate.now().plusDays(7));
+        issue.setStatus(Status.ISSUED);
+
+        boolean issued = dao.issueAsset(issue);
+        System.out.println("Issued: " + issued);
+
+        // Fetch active issues
+        List<AssetIssue> active = dao.getActiveIssues();
+        for (AssetIssue ai : active) {
+            System.out.println("Issued Asset ID: " + ai.getAssetId() + ", Status: " + ai.getStatus());
+        }
+    }
+}

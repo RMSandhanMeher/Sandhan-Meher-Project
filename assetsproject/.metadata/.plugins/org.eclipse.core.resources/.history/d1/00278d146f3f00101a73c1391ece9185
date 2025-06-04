@@ -1,0 +1,57 @@
+package com.java.asm.dao.imp;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import com.java.asm.dao.AssetDao;
+import com.java.asm.dao.AssetIssueDao;
+import com.java.asm.model.Asset;
+import com.java.asm.model.AssetIssue;
+
+public class AssetIssueDaoImpl implements AssetIssueDao {
+
+	@Override
+	public boolean issueAsset(AssetIssue assetIssue) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public AssetIssue getIssueById(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<AssetIssue> getAllIssuedAssets() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<AssetIssue> getIssuesByUserId(int userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean returnAsset(int issueId, LocalDate returnDate) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public List<AssetIssue> getActiveIssues() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean updateIssue(AssetIssue assetIssue) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	
+
+}

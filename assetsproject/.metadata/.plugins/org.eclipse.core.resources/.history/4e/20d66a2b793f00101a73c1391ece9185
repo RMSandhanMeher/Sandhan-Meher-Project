@@ -1,0 +1,48 @@
+package com.java.asm.bean;
+
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+import java.io.Serializable;
+
+import com.java.asm.model.User;
+import com.java.asm.service.UserService;
+
+@ManagedBean
+@SessionScoped
+public class UserController implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private User user = new User();
+    private String message;
+
+    private final UserService userService = new UserService();
+
+    public String register() {
+        boolean success = userService.addUser(user);
+        if (success) {
+            message = "User registered successfully!";
+            user = new User(); // Clear form
+        } else {
+            message = "Registration failed. Try again.";
+        }
+        return null; // stay on same page
+    }
+
+    // Getters and setters
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}

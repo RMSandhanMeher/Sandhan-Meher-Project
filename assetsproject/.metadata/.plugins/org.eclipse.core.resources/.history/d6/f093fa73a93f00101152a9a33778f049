@@ -1,0 +1,11 @@
+<!-- Navbar -->
+    <nav class="bg-blue-700 p-4 shadow">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-white font-bold text-xl">Asset Management System</div>
+            <div class="space-x-4">
+                <a href="/assetsManagement/view/welcome.jsf" class="text-white hover:underline">Home</a>
+                <a href="auth/signup.jsf" class="text-white hover:underline">Sign Up</a>
+                <a href="auth/login.jsf" class="text-white hover:underline">Login</a>
+            </div>
+        </div>
+    </nav>

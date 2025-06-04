@@ -1,0 +1,61 @@
+package com.java.asm;
+
+import com.java.asm.model.Role;
+import com.java.asm.model.User;
+import com.java.asm.service.UserService;
+
+import java.util.List;
+
+public class MyResource {
+    public static void main(String[] args) {
+        UserService userService = new UserService();
+
+        // Add a user
+        User user = new User();
+        user.setName("Test User");
+        user.setEmail("testuser@example.com");
+        user.setPassword("test123"); // Will be encrypted in the service layer
+        user.setRole(Role.EMPLOYEE);
+
+        boolean added = userService.addUser(user);
+        System.out.println("User added: " + added);
+
+        // Authenticate
+        User loggedInUser = userService.authenticate("testuser@example.com", "test123");
+        if (loggedInUser != null) {
+            System.out.println("Authenticated: " + loggedInUser.getName());
+        } else {
+            System.out.println("Authentication failed");
+        }
+
+        // List all users
+        List<User> allUsers = userService.getAllUsers();
+        if (allUsers != null) {
+            for (User u : allUsers) {
+                System.out.println(u.getId() + " - " + u.getName() + " - " + u.getEmail());
+            }
+        }
+
+        // Get by ID
+        if (loggedInUser != null) {
+            User fetched = userService.getUserById(loggedInUser.getId());
+            if (fetched != null) {
+                System.out.println("Fetched by ID: " + fetched.getName());
+            }
+        }
+
+        // Update a user
+        if (loggedInUser != null) {
+            loggedInUser.setName("Updated Name");
+            loggedInUser.setPassword("updated123"); // New password will be re-encrypted
+            boolean updated = userService.updateUser(loggedInUser);
+            System.out.println("User updated: " + updated);
+        }
+
+        // Delete the test user
+        if (loggedInUser != null) {
+            boolean deleted = userService.deleteUser(loggedInUser.getId());
+            System.out.println("User deleted: " + deleted);
+        }
+    }
+}

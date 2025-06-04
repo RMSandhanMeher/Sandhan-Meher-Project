@@ -1,0 +1,140 @@
+package com.java.asm.dao.imp;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.java.asm.dao.UserDao;
+import com.java.asm.model.User;
+import com.java.asm.model.Role;
+import com.java.asm.util.ConnectionHelper;
+
+public class UserDaoImpl implements UserDao {
+
+	@Override
+	public boolean addUser(User user) {
+		String sql = "INSERT INTO users (name, email, user_password, role) VALUES (?, ?, ?, ?)";
+		try {
+			Connection con = ConnectionHelper.getConnection();
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setString(1, user.getName());
+			ps.setString(2, user.getEmail());
+			ps.setString(3, user.getPassword());
+			ps.setString(4, user.getRole().toString());
+			return ps.executeUpdate() > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public User getUserById(int id) {
+		String sql = "SELECT * FROM users WHERE id = ?";
+		try {
+			Connection con = ConnectionHelper.getConnection();
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, id);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next())
+				return mapResultSetToUser(rs);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public User getUserByEmail(String email) {
+		String sql = "SELECT * FROM users WHERE email = ?";
+		try {
+			Connection con = ConnectionHelper.getConnection();
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setString(1, email);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next())
+				return mapResultSetToUser(rs);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public List<User> getAllUsers() {
+		List<User> list = new ArrayList<>();
+		String sql = "SELECT * FROM users";
+		try {
+			Connection con = ConnectionHelper.getConnection();
+			PreparedStatement ps = con.prepareStatement(sql);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				list.add(mapResultSetToUser(rs));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	@Override
+	public boolean updateUser(User user) {
+		String sql = "UPDATE users SET name = ?, email = ?, user_password = ?, role = ? WHERE id = ?";
+		try {
+			Connection con = ConnectionHelper.getConnection();
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setString(1, user.getName());
+			ps.setString(2, user.getEmail());
+			ps.setString(3, user.getPassword());
+			ps.setString(4, user.getRole().toString());
+			ps.setInt(5, user.getId());
+			return ps.executeUpdate() > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public boolean deleteUser(int id) {
+		String sql = "DELETE FROM users WHERE id = ?";
+		try {
+			Connection con = ConnectionHelper.getConnection();
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, id);
+			return ps.executeUpdate() > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public User authenticate(String email, String password) {
+		String sql = "SELECT * FROM users WHERE email = ? AND user_password = ?";
+		try (Connection con = ConnectionHelper.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setString(1, email);
+			ps.setString(2, password);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next())
+				return mapResultSetToUser(rs);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private User mapResultSetToUser(ResultSet rs) throws SQLException {
+		User user = new User();
+		user.setId(rs.getInt("id"));
+		user.setName(rs.getString("name"));
+		user.setEmail(rs.getString("email"));
+		user.setPassword(rs.getString("user_password"));
+		user.setRole(Role.valueOf(rs.getString("role")));
+		Timestamp ts = rs.getTimestamp("created_at");
+		if (ts != null) {
+			user.setCreatedAt(ts.toLocalDateTime());
+		}
+		return user;
+	}
+}

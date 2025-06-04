@@ -1,0 +1,116 @@
+package com.java.asm.service;
+
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
+import com.java.asm.dao.UserDao;
+import com.java.asm.dao.imp.UserDaoImpl;
+import com.java.asm.model.User;
+
+public class UserService {
+
+    private static final Logger logger = Logger.getLogger(UserService.class);
+    private final UserDao userDao = new UserDaoImpl();
+
+    public boolean addUser(User user) {
+        try {
+            boolean result = userDao.addUser(user);
+            if (result) {
+                logger.info("service layer :addUser: User added successfully - " + user.getEmail());
+            } else {
+                logger.info("service layer :addUser: Failed to add user - " + user.getEmail());
+            }
+            return result;
+        } catch (Exception e) {
+            logger.error("service layer :addUser: Error - " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public User getUserById(int id) {
+        try {
+            User user = userDao.getUserById(id);
+            if (user != null) {
+                logger.info("service layer :getUserById: User fetched successfully - ID=" + id);
+            } else {
+                logger.info("service layer :getUserById: No user found - ID=" + id);
+            }
+            return user;
+        } catch (Exception e) {
+            logger.error("service layer :getUserById: Error - " + e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public User getUserByEmail(String email) {
+        try {
+            User user = userDao.getUserByEmail(email);
+            if (user != null) {
+                logger.info("service layer :getUserByEmail: User fetched successfully - " + email);
+            } else {
+                logger.info("service layer :getUserByEmail: No user found - " + email);
+            }
+            return user;
+        } catch (Exception e) {
+            logger.error("service layer :getUserByEmail: Error - " + e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public List<User> getAllUsers() {
+        try {
+            List<User> users = userDao.getAllUsers();
+            logger.info("service layer :getAllUsers: Fetched " + users.size() + " users");
+            return users;
+        } catch (Exception e) {
+            logger.error("service layer :getAllUsers: Error - " + e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public boolean updateUser(User user) {
+        try {
+            boolean result = userDao.updateUser(user);
+            if (result) {
+                logger.info("service layer :updateUser: User updated - ID=" + user.getId());
+            } else {
+                logger.info("service layer :updateUser: Failed to update user - ID=" + user.getId());
+            }
+            return result;
+        } catch (Exception e) {
+            logger.error("service layer :updateUser: Error - " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public boolean deleteUser(int id) {
+        try {
+            boolean result = userDao.deleteUser(id);
+            if (result) {
+                logger.info("service layer :deleteUser: User deleted - ID=" + id);
+            } else {
+                logger.info("service layer :deleteUser: Failed to delete user - ID=" + id);
+            }
+            return result;
+        } catch (Exception e) {
+            logger.error("service layer :deleteUser: Error - " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public User authenticate(String email, String password) {
+        try {
+            User user = userDao.authenticate(email, password);
+            if (user != null) {
+                logger.info("service layer :authenticate: User authenticated - " + email);
+            } else {
+                logger.info("service layer :authenticate: Authentication failed - " + email);
+            }
+            return user;
+        } catch (Exception e) {
+            logger.error("service layer :authenticate: Error - " + e.getMessage(), e);
+            return null;
+        }
+    }
+}

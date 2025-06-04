@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<class name="com.java.resolve_complains.model.Complaint" table="COMPLAINT">
+<id name="complaintID" type="java.lang.String">
+<column name="complaintID"/>
+<generator class="assigned"/>
+</id>
+<property name="complaintType" type="java.lang.String">
+<column name="complaintType"/>
+</property>
+<property name="cDescription" type="java.lang.String">
+<column name="cDescription"/>
+</property>
+<property name="complaintDate" type="java.sql.Date">
+<column name="complaintDate"/>
+</property>
+<property name="severity" type="java.lang.String">
+<column name="severity"/>
+</property>
+<property name="status" type="java.lang.String">
+<column name="status"/>
+</property>
+</class>
+</hibernate-mapping>

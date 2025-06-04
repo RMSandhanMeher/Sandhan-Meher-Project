@@ -1,0 +1,111 @@
+package com.java.asm.bean;
+
+import com.java.asm.model.Asset;
+import com.java.asm.service.AssetService;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class AssetController implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private Asset asset = new Asset();
+    private List<Asset> assetList;
+    private String message;
+
+    private String searchKeyword;
+    private int searchId;
+    private Asset searchedAsset;
+
+    private final AssetService assetService = new AssetService();
+
+    public String addAsset() {
+        boolean result = assetService.addAsset(asset);
+        if (result) {
+            message = "Asset added successfully!";
+            asset = new Asset(); // reset
+        } else {
+            message = "Failed to add asset.";
+        }
+        refreshAssets();
+        return null;
+    }
+
+    public String deleteAsset(int id) {
+        boolean result = assetService.deleteAsset(id);
+        message = result ? "Asset deleted." : "Failed to delete.";
+        refreshAssets();
+        return null;
+    }
+
+    public void refreshAssets() {
+        assetList = assetService.getAllAssets();
+    }
+
+    public void searchAssets() {
+        assetList = assetService.searchAssets(searchKeyword);
+    }
+
+    public void searchAssetById() {
+        Asset result = assetService.getAssetById(searchId);
+        searchedAsset = result;
+        assetList = new ArrayList<>();
+        if (result != null) {
+            assetList.add(result);
+        }
+    }
+
+    // Getters and Setters
+    public Asset getAsset() {
+        return asset;
+    }
+
+    public void setAsset(Asset asset) {
+        this.asset = asset;
+    }
+
+    public List<Asset> getAssetList() {
+        if (assetList == null) {
+            refreshAssets();
+        }
+        return assetList;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String redirectToAddAsset() {
+        return "addAsset?faces-redirect=true";
+    }
+
+    public String getSearchKeyword() {
+        return searchKeyword;
+    }
+
+    public void setSearchKeyword(String searchKeyword) {
+        this.searchKeyword = searchKeyword;
+    }
+
+    public int getSearchId() {
+        return searchId;
+    }
+
+    public void setSearchId(int searchId) {
+        this.searchId = searchId;
+    }
+
+    public Asset getSearchedAsset() {
+        return searchedAsset;
+    }
+
+    public void setSearchedAsset(Asset searchedAsset) {
+        this.searchedAsset = searchedAsset;
+    }
+}

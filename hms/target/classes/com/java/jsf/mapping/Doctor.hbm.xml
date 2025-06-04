@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.java.jsf.model.Doctor" table="Doctor">
+        <id name="doctorId" column="DoctorId" type="java.lang.String">
+            <generator class="assigned"/>
+        </id>
+
+        <property name="doctorName" column="DoctorName" type="java.lang.String"/>
+        
+        <!-- Enum Mapping for Specialization -->
+        <property name="special" column="Specialization">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">com.java.jsf.model.Specialization</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+
+        <property name="location" column="Location" type="java.lang.String"/>
+        <property name="mobileNo" column="MobileNo" type="java.lang.String"/>
+
+        <!-- Enum Mapping for Status -->
+        <property name="status" column="IsStatus">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">com.java.jsf.model.Status</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+
+        <!-- Using LIST for Patient -->
+        <list name="patientList" cascade="all" inverse="true">
+            <key column="DoctorId"/>
+            <index column="list_index"/>
+            <one-to-many class="com.java.jsf.model.Patient"/>
+        </list>
+    </class>
+    
+</hibernate-mapping>

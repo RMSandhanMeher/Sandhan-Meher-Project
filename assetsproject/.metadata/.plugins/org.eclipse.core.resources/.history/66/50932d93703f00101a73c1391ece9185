@@ -1,0 +1,60 @@
+package com.java.asm;
+
+import com.java.asm.dao.UserDao;
+import com.java.asm.dao.imp.UserDaoImpl;
+import com.java.asm.model.Role;
+import com.java.asm.model.User;
+
+import java.util.List;
+
+public class MyResource {
+    public static void main(String[] args) {
+        UserDao userDao = new UserDaoImpl();
+
+        // Add a user
+        User user = new User();
+        user.setName("Test User");
+        user.setEmail("testuser@example.com");
+        user.setPassword("test123");
+        user.setRole(Role.EMPLOYEE);
+
+        boolean added = userDao.addUser(user);
+        System.out.println("User added: " + added);
+
+        // Authenticate
+        User loggedInUser = userDao.authenticate("testuser@example.com", "test123");
+        if (loggedInUser != null) {
+            System.out.println("Authenticated: " + loggedInUser.getName());
+        } else {
+            System.out.println("Authentication failed");
+        }
+
+        // List all users
+        List<User> allUsers = userDao.getAllUsers();
+        for (User u : allUsers) {
+            System.out.println(u.getId() + " - " + u.getName() + " - " + u.getEmail());
+        }
+
+        // Get by ID
+        if (!allUsers.isEmpty()) {
+            User fetched = userDao.getUserById(allUsers.get(0).getId());
+            if (fetched != null) {
+                System.out.println("Fetched by ID: " + fetched.getName());
+            }
+        }
+
+        // Update a user
+        if (!allUsers.isEmpty()) {
+            User toUpdate = allUsers.get(0);
+            toUpdate.setName("Updated Name");
+            boolean updated = userDao.updateUser(toUpdate);
+            System.out.println("User updated: " + updated);
+        }
+
+        // Delete the test user
+        if (loggedInUser != null) {
+            boolean deleted = userDao.deleteUser(loggedInUser.getId());
+            System.out.println("User deleted: " + deleted);
+        }
+    }
+}

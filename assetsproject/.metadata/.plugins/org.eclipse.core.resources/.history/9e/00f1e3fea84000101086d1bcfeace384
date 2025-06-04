@@ -1,0 +1,78 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="f" uri="http://java.sun.com/jsf/core" %>
+<%@ taglib prefix="h" uri="http://java.sun.com/jsf/html" %>
+
+<f:view>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Search Asset</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+    <div class="container mx-auto">
+        <h2 class="text-3xl font-bold mb-4">Search Asset</h2>
+
+        <h:form styleClass="mb-6 space-y-4">
+            <div>
+                <label class="block font-medium">Search by Keyword:</label>
+                <h:inputText value="#{assetController.searchKeyword}" styleClass="border p-2 rounded w-1/2" />
+                <h:commandButton value="Search" action="#{assetController.searchAssets}"
+                                 styleClass="ml-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" />
+            </div>
+
+            <div>
+                <label class="block font-medium">Search by ID:</label>
+                <h:inputText value="#{assetController.searchId}" styleClass="border p-2 rounded w-1/2" />
+                <h:commandButton value="Search" action="#{assetController.searchAssetById}"
+                                 styleClass="ml-2 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" />
+            </div>
+        </h:form>
+
+        <h:panelGroup rendered="#{not empty assetController.assetList}">
+            <h:dataTable value="#{assetController.assetList}" var="asset"
+                         styleClass="table-auto w-full border border-gray-300"
+                         headerClass="bg-gray-700 text-white px-4 py-2"
+                         rowClasses="bg-white text-gray-800 border-b">
+
+                <h:column>
+                    <f:facet name="header">ID</f:facet>
+                    <h:outputText value="#{asset.id}" />
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">Name</f:facet>
+                    <h:outputText value="#{asset.assetName}" />
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">Type</f:facet>
+                    <h:outputText value="#{asset.assetType}" />
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">Quantity</f:facet>
+                    <h:outputText value="#{asset.quantity}" />
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">Description</f:facet>
+                    <h:outputText value="#{asset.description}" />
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">Added On</f:facet>
+                    <h:outputText value="#{asset.addedOn}" />
+                </h:column>
+            </h:dataTable>
+        </h:panelGroup>
+
+        <a href="listAssets.jsf"
+           class="inline-block mt-6 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-800">
+            Back to List
+        </a>
+    </div>
+</body>
+</html>
+</f:view>

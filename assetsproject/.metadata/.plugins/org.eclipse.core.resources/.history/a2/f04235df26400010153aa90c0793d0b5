@@ -1,0 +1,102 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="f" uri="http://java.sun.com/jsf/core"%>
+<%@ taglib prefix="h" uri="http://java.sun.com/jsf/html"%>
+
+<f:view>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Expenses</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/css.gg/icons/all.css" rel="stylesheet">
+    <style>
+        /* Custom CSS for transitions and enhanced styling */
+        .btn-transition {
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-transition:hover {
+            transform: translateY(-2px);
+        }
+        .input-focus:focus {
+            border-color: #6366f1; /* Indigo 500 */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5); /* Indigo 500 with opacity */
+        }
+        .table-row-hover:hover {
+            background-color: #f3f4f6; /* Gray 100 */
+        }
+        .icon-spacing {
+            margin-right: 0.5rem; /* Space between icon and text */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans antialiased text-gray-800">
+    <div class="container mx-auto p-8 max-w-4xl bg-white shadow-xl rounded-lg mt-10">
+        <h2 class="text-4xl font-extrabold mb-6 text-center text-gray-900">
+            <i class="gg-calendar-due icon-spacing"></i>Daily Expenses
+        </h2>
+
+        <div class="mb-8 p-6 border border-gray-200 rounded-lg bg-gray-50">
+            <h:form>
+                <div class="mb-4">
+                    <h:outputLabel for="groupId" value="Enter Group ID:" styleClass="block text-lg font-medium text-gray-700 mb-2" />
+                    <h:inputText id="groupId" value="#{expenseController.groupId}"
+                        required="true" styleClass="w-full border border-gray-300 p-3 rounded-lg focus:outline-none input-focus" />
+                </div>
+                <h:commandButton value="Load Expenses"
+                    action="#{expenseController.dailyExpensesListMethod}"
+                    styleClass="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 btn-transition w-full text-lg">
+                    <i class="gg-loadbar-alt icon-spacing"></i>
+                </h:commandButton>
+            </h:form>
+        </div>
+
+        <div class="overflow-x-auto shadow-md rounded-lg">
+            <h:form>
+                <h:dataTable
+                    value="#{expenseController.dailyExpensesList}"
+                    var="expense"
+                    styleClass="min-w-full table-auto border-collapse"
+                    headerClass="bg-indigo-700 text-white text-left px-5 py-3 uppercase tracking-wider text-sm"
+                    rowClasses="bg-white text-gray-700 border-b border-gray-200 table-row-hover">
+
+                    <h:column>
+                        <f:facet name="header">
+                            <i class="gg-credit-card icon-spacing"></i>Expense ID
+                        </f:facet>
+                        <h:outputText value="#{expense.expId}" styleClass="px-5 py-3 whitespace-nowrap" />
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <i class="gg-pen icon-spacing"></i>Description
+                        </f:facet>
+                        <h:outputText value="#{expense.expenseDescription}" styleClass="px-5 py-3" />
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <i class="gg-cash icon-spacing"></i>Amount
+                        </f:facet>
+                        <h:outputText value="#{expense.amount}" styleClass="px-5 py-3 whitespace-nowrap font-semibold" />
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <i class="gg-calendar-today icon-spacing"></i>Date
+                        </f:facet>
+                        <h:outputText value="#{expense.expenseDate}" styleClass="px-5 py-3 whitespace-nowrap">
+                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                        </h:outputText>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <i class="gg-user icon-spacing"></i>Paid By (User ID)
+                        </f:facet>
+                        <h:outputText value="#{expense.paidBy}" styleClass="px-5 py-3 whitespace-nowrap" />
+                    </h:column>
+                </h:dataTable>
+            </h:form>
+        </div>
+    </div>
+</body>
+</html>
+</f:view>

@@ -1,0 +1,139 @@
+<%@ taglib uri="http://xmlns.jcp.org/jsf/html" prefix="h" %>
+<%@ taglib uri="http://xmlns.jcp.org/jsf/core" prefix="f" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<f:view>
+    <html>
+    <head>
+        <title>Asset Issue Management</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 10px;
+            }
+
+            .message {
+                margin: 10px 0;
+                padding: 10px;
+                border-radius: 5px;
+            }
+
+            .success {
+                background-color: #d4edda;
+                color: #155724;
+                border: 1px solid #c3e6cb;
+            }
+
+            .error {
+                background-color: #f8d7da;
+                color: #721c24;
+                border: 1px solid #f5c6cb;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+
+            th, td {
+                padding: 10px;
+                border: 1px solid #ccc;
+                text-align: left;
+            }
+
+            th {
+                background-color: #f2f2f2;
+            }
+        </style>
+    </head>
+    <body>
+        <h:form>
+            <h2>Issue Asset</h2>
+
+            <h:panelGroup rendered="#{not empty assetIssueController.message}">
+                <h:panelGroup styleClass="message #{assetIssueController.messageType}">
+                    <h:outputText value="#{assetIssueController.message}" />
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <div class="form-group">
+                <h:outputLabel for="assetId" value="Asset ID: " />
+                <h:inputText id="assetId" value="#{assetIssueController.assetIssue.asset.id}" required="true" />
+            </div>
+
+            <div class="form-group">
+                <h:outputLabel for="issuedTo" value="Issued To (User ID): " />
+                <h:inputText id="issuedTo" value="#{assetIssueController.assetIssue.issuedTo.id}" required="true" />
+            </div>
+
+            <div class="form-group">
+                <h:outputLabel for="issuedBy" value="Issued By (Admin ID): " />
+                <h:inputText id="issuedBy" value="#{assetIssueController.assetIssue.issuedBy.id}" required="true" />
+            </div>
+
+            <div class="form-group">
+                <h:outputLabel for="issueDate" value="Issue Date: " />
+                <h:inputText id="issueDate" value="#{assetIssueController.assetIssue.issueDate}" required="true">
+                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                </h:inputText>
+            </div>
+
+            <div class="form-group">
+                <h:outputLabel for="expectedReturnDate" value="Expected Return Date: " />
+                <h:inputText id="expectedReturnDate" value="#{assetIssueController.assetIssue.expectedReturnDate}">
+                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                </h:inputText>
+            </div>
+
+            <div class="form-group">
+                <h:commandButton value="Issue Asset" action="#{assetIssueController.issueAsset}" />
+            </div>
+
+            <h:commandButton value="Refresh List" action="#{assetIssueController.loadIssues}" />
+        </h:form>
+
+        <h2>All Asset Issues</h2>
+        <h:dataTable value="#{assetIssueController.issueList}" var="issue" border="1">
+            <h:column>
+                <f:facet name="header">Asset ID</f:facet>
+                <h:outputText value="#{issue.asset.id}" />
+            </h:column>
+            <h:column>
+                <f:facet name="header">Issued To</f:facet>
+                <h:outputText value="#{issue.issuedTo.id}" />
+            </h:column>
+            <h:column>
+                <f:facet name="header">Issued By</f:facet>
+                <h:outputText value="#{issue.issuedBy.id}" />
+            </h:column>
+            <h:column>
+                <f:facet name="header">Issue Date</f:facet>
+                <h:outputText value="#{issue.issueDate}">
+                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                </h:outputText>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Expected Return Date</f:facet>
+                <h:outputText value="#{issue.expectedReturnDate}">
+                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                </h:outputText>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Return Date</f:facet>
+                <h:outputText value="#{issue.returnDate}">
+                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                </h:outputText>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Status</f:facet>
+                <h:outputText value="#{issue.status}" />
+            </h:column>
+        </h:dataTable>
+    </body>
+    </html>
+</f:view>

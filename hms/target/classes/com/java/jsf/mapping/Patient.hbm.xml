@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="com.java.jsf.model.Patient" table="Patient">
+		<id name="patientId" column="PatientId" type="java.lang.String">
+			<generator class="assigned" />
+		</id>
+
+		<property name="patientName" column="PatientName"
+			type="java.lang.String" />
+		<property name="DOB" column="DateOfBirth" type="date" />
+
+		<!-- Mapping Many-to-One relationship with Doctor -->
+		<many-to-one name="doctor"
+			class="com.java.jsf.model.Doctor" column="DoctorId" not-null="false" />
+
+		<list name="medicalrecord" cascade="all" inverse="true">
+			<key column="PatientId" />
+			<index column="list_index" /> <!-- This column must exist in the MedicationHistory table -->
+			<one-to-many class="com.java.jsf.model.MedicationHistory" />
+		</list>
+	</class>
+</hibernate-mapping>

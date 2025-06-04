@@ -1,0 +1,172 @@
+package com.java.asm.dao.imp;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.log4j.Logger;
+
+import com.java.asm.dao.AssetDao;
+import com.java.asm.model.Asset;
+import com.java.asm.util.ConnectionHelper;
+
+public class AssetDaoImpl implements AssetDao {
+
+    private static final Logger logger = Logger.getLogger(AssetDaoImpl.class.getName());
+
+    @Override
+    public boolean addAsset(Asset asset) {
+        String sql = "INSERT INTO assets (asset_name, asset_type, description, quantity) VALUES (?, ?, ?, ?)";
+        try (Connection con = ConnectionHelper.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, asset.getAssetName());
+            ps.setString(2, asset.getAssetType());
+            ps.setString(3, asset.getDescription());
+            ps.setInt(4, asset.getQuantity());
+
+            boolean success = ps.executeUpdate() > 0;
+            if (success) {
+                logger.info("Asset added successfully: " + asset.getAssetName());
+            }
+            return success;
+        } catch (Exception e) {
+            logger.error("Error adding asset: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public Asset getAssetById(int id) {
+        String sql = "SELECT * FROM assets WHERE id = ?";
+        try (Connection con = ConnectionHelper.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    logger.info("Asset retrieved successfully for ID: " + id);
+                    return mapResultSetToAsset(rs);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error fetching asset by ID: " + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public List<Asset> getAllAssets() {
+        List<Asset> list = new ArrayList<>();
+        String sql = "SELECT * FROM assets";
+        try (Connection con = ConnectionHelper.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                list.add(mapResultSetToAsset(rs));
+            }
+            logger.info("Fetched all assets. Count: " + list.size());
+        } catch (Exception e) {
+            logger.error("Error fetching all assets: " + e.getMessage());
+        }
+        return list;
+    }
+
+    @Override
+    public boolean updateAsset(Asset asset) {
+        String sql = "UPDATE assets SET asset_name = ?, asset_type = ?, description = ?, quantity = ? WHERE id = ?";
+        try (Connection con = ConnectionHelper.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, asset.getAssetName());
+            ps.setString(2, asset.getAssetType());
+            ps.setString(3, asset.getDescription());
+            ps.setInt(4, asset.getQuantity());
+            ps.setInt(5, asset.getId());
+
+            boolean success = ps.executeUpdate() > 0;
+            if (success) {
+                logger.info("Asset updated successfully. ID: " + asset.getId());
+            }
+            return success;
+        } catch (Exception e) {
+            logger.error("Error updating asset: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean deleteAsset(int id) {
+        String sql = "DELETE FROM assets WHERE id = ?";
+        try (Connection con = ConnectionHelper.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            boolean success = ps.executeUpdate() > 0;
+            if (success) {
+                logger.info("Asset deleted successfully. ID: " + id);
+            }
+            return success;
+        } catch (Exception e) {
+            logger.error("Error deleting asset: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateAssetQuantity(int assetId, int newQuantity) {
+        String sql = "UPDATE assets SET quantity = ? WHERE id = ?";
+        try (Connection con = ConnectionHelper.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, newQuantity);
+            ps.setInt(2, assetId);
+            boolean success = ps.executeUpdate() > 0;
+            if (success) {
+                logger.info("Asset quantity updated successfully. ID: " + assetId + ", New Quantity: " + newQuantity);
+            }
+            return success;
+        } catch (Exception e) {
+            logger.error("Error updating asset quantity: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public List<Asset> searchAssets(String keyword) {
+        List<Asset> list = new ArrayList<>();
+        String sql = "SELECT * FROM assets WHERE asset_name LIKE ? OR asset_type LIKE ? OR description LIKE ?";
+        try (Connection con = ConnectionHelper.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            String pattern = "%" + keyword + "%";
+            ps.setString(1, pattern);
+            ps.setString(2, pattern);
+            ps.setString(3, pattern);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSetToAsset(rs));
+                }
+            }
+            logger.info("Assets search completed. Keyword: '" + keyword + "', Results found: " + list.size());
+        } catch (Exception e) {
+            logger.error("Error searching assets: " + e.getMessage());
+        }
+        return list;
+    }
+
+    private Asset mapResultSetToAsset(ResultSet rs) throws SQLException {
+        Asset asset = new Asset();
+        asset.setId(rs.getInt("id"));
+        asset.setAssetName(rs.getString("asset_name"));
+        asset.setAssetType(rs.getString("asset_type"));
+        asset.setDescription(rs.getString("description"));
+        asset.setQuantity(rs.getInt("quantity"));
+        Timestamp ts = rs.getTimestamp("added_on");
+        if (ts != null) {
+            asset.setAddedOn(ts.toLocalDateTime());
+        }
+        return asset;
+    }
+}

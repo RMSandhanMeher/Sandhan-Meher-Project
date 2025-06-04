@@ -1,0 +1,50 @@
+package com.java.asm;
+
+import com.java.asm.dao.AssetDao;
+import com.java.asm.dao.imp.AssetDaoImpl;
+import com.java.asm.model.Asset;
+
+import java.util.List;
+
+public class MyResource {
+    public static void main(String[] args) {
+        AssetDao assetDao = new AssetDaoImpl();
+
+        Asset asset = new Asset();
+        asset.setAssetName("Printer");
+        asset.setAssetType("Electronics");
+        asset.setDescription("Laser printer");
+        asset.setQuantity(5);
+
+        // Add
+        boolean added = assetDao.addAsset(asset);
+        System.out.println("Asset added: " + added);
+
+        // Fetch All
+        List<Asset> assets = assetDao.getAllAssets();
+        System.out.println("Assets in system:");
+        for (Asset a : assets) {
+            System.out.println(a.getId() + " - " + a.getAssetName() + " - " + a.getQuantity());
+        }
+
+        // Search
+        List<Asset> searchResults = assetDao.searchAssets("print");
+        System.out.println("Search results:");
+        for (Asset a : searchResults) {
+            System.out.println(a.getAssetName());
+        }
+
+        // Update quantity
+        if (!assets.isEmpty()) {
+            Asset toUpdate = assets.get(0);
+            boolean updated = assetDao.updateAssetQuantity(toUpdate.getId(), 10);
+            System.out.println("Asset quantity updated: " + updated);
+        }
+
+        // Delete last added asset (optional)
+        if (!assets.isEmpty()) {
+            boolean deleted = assetDao.deleteAsset(assets.get(assets.size() - 1).getId());
+            System.out.println("Asset deleted: " + deleted);
+        }
+    }
+}

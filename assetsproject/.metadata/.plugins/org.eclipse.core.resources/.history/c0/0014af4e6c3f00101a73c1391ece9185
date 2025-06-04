@@ -1,0 +1,21 @@
+package com.java.asm.dao;
+
+import java.util.List;
+import com.java.model.Asset;
+
+public interface AssetDao {
+
+    boolean addAsset(Asset asset);
+
+    Asset getAssetById(int id);
+
+    List<Asset> getAllAssets();
+
+    boolean updateAsset(Asset asset);
+
+    boolean deleteAsset(int id);
+
+    boolean updateAssetQuantity(int assetId, int newQuantity);
+
+    List<Asset> searchAssets(String keyword);
+}

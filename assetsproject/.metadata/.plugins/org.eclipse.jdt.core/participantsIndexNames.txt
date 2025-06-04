@@ -1,0 +1,15 @@
+INDEX VERSION 1.134
+C:\java_training\assetsproject\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\2145555633.index
+\ExpensesProject\src\main\java
+C:\java_training\assetsproject\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\1674063098.index
+\assetsManagement\src\main\java
+C:\java_training\assetsproject\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\2092517331.index
+\assetsManagement\src\main\java
+C:\java_training\assetsproject\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\937376461.index
+\assetsManagement\src\main\java
+C:\java_training\assetsproject\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\66164254.index
+\assetsManagement\src\main\java
+C:\java_training\assetsproject\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\2682510420.index
+\assetsManagement\src\main\java
+C:\java_training\assetsproject\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\666112796.index
+\facadePattern\src\main\java
